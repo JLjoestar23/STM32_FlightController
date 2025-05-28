@@ -7266,10 +7266,10 @@
 		)
 		(uuid "f181cfcf-45fb-41f5-b60c-a84b3999208e")
 	)
-	(text_box "IMU uses 1.8V logic levels (fucking bullshit and makes me waste space)\nTransistors are for bidirectional level shifting\nVoltage dividers are for unidirectional level shifting"
+	(text_box "IMU uses 1.8V logic levels (fucking bullshit and makes me waste space)\nTransistors are for unidirectional level shifting up (1.8V -> 3.3V)\nVoltage dividers are for unidirectional level shifting down (3.3 -> 1.8V)"
 		(exclude_from_sim no)
-		(at 306.07 54.61 0)
-		(size 34.29 16.51)
+		(at 303.53 55.88 0)
+		(size 40.64 15.24)
 		(margins 0.9525 0.9525 0.9525 0.9525)
 		(stroke
 			(width 0)
@@ -10928,7 +10928,7 @@
 		)
 		(uuid "196173b0-1d89-4979-b3ce-9523b6131f0b")
 	)
-	(label "GPS_RX"
+	(label "GPS_TX"
 		(at 246.38 40.64 180)
 		(effects
 			(font
@@ -11268,7 +11268,7 @@
 		)
 		(uuid "9ddf3bdc-62b6-4870-bcf6-5bea91e5faed")
 	)
-	(label "ELRS_TX"
+	(label "ELRS_RX"
 		(at 246.38 101.6 180)
 		(effects
 			(font
@@ -11308,7 +11308,7 @@
 		)
 		(uuid "ac858d69-476f-4c7d-b60b-cbac3fdc8e60")
 	)
-	(label "GPS_TX"
+	(label "GPS_RX"
 		(at 246.38 38.1 180)
 		(effects
 			(font
@@ -11428,7 +11428,7 @@
 		)
 		(uuid "da4482b3-ec0a-4eca-bd1e-8aaad17b992b")
 	)
-	(label "ELRS_RX"
+	(label "ELRS_TX"
 		(at 246.38 104.14 180)
 		(effects
 			(font
