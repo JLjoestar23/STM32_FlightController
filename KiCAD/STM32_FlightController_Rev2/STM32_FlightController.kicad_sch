@@ -2033,6 +2033,155 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Diode:PMEG6010CEH"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "PMEG6010CEH"
+				(at 0 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Diode_SMD:D_SOD-123F"
+				(at 0 -4.445 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PMEG6010CEH_PMEG6010CEJ.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "60V, 1A very low Vf MEGA Schottky barrier rectifier, SOD-123F"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "forward voltage diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "D*SOD?123F*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "PMEG6010CEH_0_1"
+				(polyline
+					(pts
+						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "PMEG6010CEH_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "MCU_ST_STM32F4:STM32F405RGTx"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -6916,9 +7065,9 @@
 		)
 		(uuid "6877bf5b-695a-43f6-b211-b5cb9296cc84")
 	)
-	(text "High Speed External Oscillator"
+	(text "High Speed External Crystal"
 		(exclude_from_sim no)
-		(at 43.18 136.144 0)
+		(at 40.64 136.144 0)
 		(effects
 			(font
 				(size 2.54 2.54)
@@ -6938,7 +7087,7 @@
 	)
 	(text "RESET and BOOT Functionality"
 		(exclude_from_sim no)
-		(at 43.18 181.864 0)
+		(at 42.672 181.864 0)
 		(effects
 			(font
 				(size 2.54 2.54)
@@ -7066,6 +7215,26 @@
 		)
 		(uuid "4f1da3b5-f3c2-4188-909a-8ba5252c1171")
 	)
+	(text_box "*need to change power mux to a component with higher Amp rating"
+		(exclude_from_sim no)
+		(at 91.44 82.55 0)
+		(size 26.67 7.62)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "5119ede2-8b01-43d2-ba78-47538758d70e")
+	)
 	(text_box "Barometer can use 3.3V logic level, so no need for shifting\n2x 100nF decoupling capacitors (according to datasheet)"
 		(exclude_from_sim no)
 		(at 334.01 83.82 0)
@@ -7085,6 +7254,26 @@
 			(justify left top)
 		)
 		(uuid "5549b788-f85e-4b3b-89f3-05223aaab120")
+	)
+	(text_box "*should change it to dedicated level shifter IC"
+		(exclude_from_sim no)
+		(at 312.42 38.1 0)
+		(size 33.02 6.35)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "5ee8327b-8f31-484c-b3cd-7e2a3a2cbe57")
 	)
 	(text_box "LDO to drop voltage from 5 to 3.3V"
 		(exclude_from_sim no)
@@ -7507,6 +7696,12 @@
 		(uuid "7d918196-0ecf-4868-a7ae-ff4be03c8bb6")
 	)
 	(junction
+		(at 396.24 95.25)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7ddac6d8-4984-44a7-909b-94e79510dd7e")
+	)
+	(junction
 		(at 384.81 113.03)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -7683,6 +7878,10 @@
 		(uuid "25fe82b5-0bd2-4408-8af4-b5cefd83d56f")
 	)
 	(no_connect
+		(at 81.28 100.33)
+		(uuid "2e8a5f64-8ba9-444f-9fad-af32367962bf")
+	)
+	(no_connect
 		(at 391.16 55.88)
 		(uuid "3c242f89-b53a-4ca9-a712-75589563035a")
 	)
@@ -7773,6 +7972,10 @@
 	(no_connect
 		(at 236.22 35.56)
 		(uuid "c22dc9da-eed7-4135-9995-5c2d4bee1948")
+	)
+	(no_connect
+		(at 81.28 92.71)
+		(uuid "cd1b3565-b4f3-4c0c-995d-c18f8c138362")
 	)
 	(no_connect
 		(at 195.58 71.12)
@@ -8937,6 +9140,16 @@
 			(type default)
 		)
 		(uuid "652cf566-f32a-4faf-890f-9947219b34d6")
+	)
+	(wire
+		(pts
+			(xy 396.24 93.98) (xy 396.24 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "65b093c2-8538-426e-be0c-60f7b459d3a3")
 	)
 	(wire
 		(pts
@@ -12213,6 +12426,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Diode:PMEG6010CEH")
+		(at 81.28 96.52 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "12f8cb48-01a0-4ec1-81d1-1bbcf4138c1a")
+		(property "Reference" "D3"
+			(at 83.82 95.5674 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "PMEG6010CEH"
+			(at 83.82 98.1074 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123F"
+			(at 85.725 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PMEG6010CEH_PMEG6010CEJ.pdf"
+			(at 81.28 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "60V, 1A very low Vf MEGA Schottky barrier rectifier, SOD-123F"
+			(at 81.28 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "7adcf82e-13d7-4d83-a791-3d7b5f033a9b")
+		)
+		(pin "1"
+			(uuid "fa730da5-99e0-4c5e-b9dd-d4da9843b3b6")
+		)
+		(instances
+			(project ""
+				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 29.21 114.3 0)
 		(unit 1)
@@ -13946,7 +14229,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3.3k"
+		(property "Value" "2.7k"
 			(at 290.322 79.248 90)
 			(effects
 				(font
@@ -15977,7 +16260,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3.3k"
+		(property "Value" "2.7k"
 			(at 290.322 64.008 90)
 			(effects
 				(font
@@ -16990,7 +17273,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3.3k"
+		(property "Value" "2.7k"
 			(at 290.322 91.948 90)
 			(effects
 				(font
@@ -18131,7 +18414,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "2.7k"
+		(property "Value" "3.3k"
 			(at 275.082 91.948 90)
 			(effects
 				(font
@@ -18436,6 +18719,71 @@
 			(project "STM32_FlightController"
 				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
 					(reference "H3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 396.24 93.98 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c44ed3d2-b32d-4ccc-8b84-5c5189e488f2")
+		(property "Reference" "#PWR050"
+			(at 396.24 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 396.24 90.424 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 396.24 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 396.24 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 396.24 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0517f72f-4a53-4b53-a244-785f6b3dbb7c")
+		)
+		(instances
+			(project "STM32_FlightController"
+				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
+					(reference "#PWR050")
 					(unit 1)
 				)
 			)
@@ -19199,7 +19547,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "2.7k"
+		(property "Value" "3.3k"
 			(at 275.082 64.008 90)
 			(effects
 				(font
@@ -19799,7 +20147,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "2.7k"
+		(property "Value" "3.3k"
 			(at 275.082 79.248 90)
 			(effects
 				(font
