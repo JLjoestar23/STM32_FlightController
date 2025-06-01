@@ -1253,6 +1253,207 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:D_Schottky_Dual_CommonCathode_AAK_Parallel"
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "D_Schottky_Dual_CommonCathode_AAK_Parallel"
+				(at 0 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 1.27 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Dual Schottky diode, common cathode on pin 3"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "D_Schottky_Dual_CommonCathode_AAK_Parallel_0_1"
+				(polyline
+					(pts
+						(xy -2.54 3.81) (xy 0 2.54) (xy -2.54 1.27) (xy -2.54 3.81) (xy -2.54 3.81) (xy -2.54 3.81)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 -1.27) (xy 0 -2.54) (xy -2.54 -3.81) (xy -2.54 -1.27) (xy -2.54 -1.27) (xy -2.54 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 -2.54) (xy 1.27 -2.54) (xy 1.27 2.54) (xy -2.54 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 3.556) (xy 0.508 3.81) (xy 0 3.81) (xy 0 1.27) (xy -0.508 1.27) (xy -0.508 1.524)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 -1.524) (xy 0.508 -1.27) (xy 0 -1.27) (xy 0 -3.81) (xy -0.508 -3.81) (xy -0.508 -3.556)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy 2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 1.27 0)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Device:FerriteBead_Small"
 			(pin_numbers
 				(hide yes)
@@ -1694,477 +1895,6 @@
 					(at 0 -3.81 90)
 					(length 1.27)
 					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Diode:BAT54C"
-			(pin_names
-				(offset 1.016)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "D"
-				(at 0.635 -3.81 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "BAT54C"
-				(at -6.35 3.175 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-				(at 1.905 3.175 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "http://www.diodes.com/_files/datasheets/ds11005.pdf"
-				(at -2.032 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "dual schottky barrier diode, common cathode"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "schottky diode common cathode"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "SOT?23*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "BAT54C_0_1"
-				(polyline
-					(pts
-						(xy -3.175 -1.27) (xy -3.175 1.27) (xy -1.27 0) (xy -3.175 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.905 1.27) (xy -1.905 1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.905 0) (xy 1.905 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy -1.905 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy -1.27 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 0) (xy -3.81 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -1.27) (xy -0.635 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -0.635 -1.27) (xy -0.635 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 0 0)
-					(radius 0.254)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.635 -1.27) (xy 0.635 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.905 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -1.27) (xy 0.635 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.905 1.27) (xy 1.905 1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.175 -1.27) (xy 3.175 1.27) (xy 1.27 0) (xy 3.175 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.81 0) (xy 1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "BAT54C_1_1"
-				(pin passive line
-					(at -7.62 0 0)
-					(length 3.81)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -5.08 90)
-					(length 5.08)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 0 180)
-					(length 3.81)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Diode:PMEG6010CEH"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "D"
-				(at 0 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "PMEG6010CEH"
-				(at 0 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "Diode_SMD:D_SOD-123F"
-				(at 0 -4.445 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PMEG6010CEH_PMEG6010CEJ.pdf"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "60V, 1A very low Vf MEGA Schottky barrier rectifier, SOD-123F"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "forward voltage diode"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "D*SOD?123F*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "PMEG6010CEH_0_1"
-				(polyline
-					(pts
-						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy -1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "PMEG6010CEH_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "K"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "A"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7197,7 +6927,7 @@
 	)
 	(text_box "Power mux to allow power from USB and LiPo battery"
 		(exclude_from_sim no)
-		(at 95.25 67.31 0)
+		(at 104.14 68.58 0)
 		(size 26.67 7.62)
 		(margins 0.9525 0.9525 0.9525 0.9525)
 		(stroke
@@ -7214,26 +6944,6 @@
 			(justify left top)
 		)
 		(uuid "4f1da3b5-f3c2-4188-909a-8ba5252c1171")
-	)
-	(text_box "*need to change power mux to a component with higher Amp rating"
-		(exclude_from_sim no)
-		(at 91.44 82.55 0)
-		(size 26.67 7.62)
-		(margins 0.9525 0.9525 0.9525 0.9525)
-		(stroke
-			(width 0)
-			(type solid)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left top)
-		)
-		(uuid "5119ede2-8b01-43d2-ba78-47538758d70e")
 	)
 	(text_box "Barometer can use 3.3V logic level, so no need for shifting\n2x 100nF decoupling capacitors (according to datasheet)"
 		(exclude_from_sim no)
@@ -7744,12 +7454,6 @@
 		(uuid "8960c5fe-9cca-4cf6-bef7-d94d16b571d3")
 	)
 	(junction
-		(at 81.28 87.63)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8a49b271-dd4e-4ccd-926c-0164e7ee6fa5")
-	)
-	(junction
 		(at 275.59 119.38)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -7869,6 +7573,12 @@
 		(color 0 0 0 0)
 		(uuid "f8ffcfc4-b3fc-4ed4-aa1f-3d71f6a72214")
 	)
+	(junction
+		(at 78.74 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "fa372448-a9c3-4fb8-9ab8-61a224ded0a9")
+	)
 	(no_connect
 		(at 195.58 73.66)
 		(uuid "0e0dd288-c55e-4aba-b428-60f57a48cf35")
@@ -7876,10 +7586,6 @@
 	(no_connect
 		(at 195.58 60.96)
 		(uuid "25fe82b5-0bd2-4408-8af4-b5cefd83d56f")
-	)
-	(no_connect
-		(at 81.28 100.33)
-		(uuid "2e8a5f64-8ba9-444f-9fad-af32367962bf")
 	)
 	(no_connect
 		(at 391.16 55.88)
@@ -7972,10 +7678,6 @@
 	(no_connect
 		(at 236.22 35.56)
 		(uuid "c22dc9da-eed7-4135-9995-5c2d4bee1948")
-	)
-	(no_connect
-		(at 81.28 92.71)
-		(uuid "cd1b3565-b4f3-4c0c-995d-c18f8c138362")
 	)
 	(no_connect
 		(at 195.58 71.12)
@@ -8383,6 +8085,16 @@
 	)
 	(wire
 		(pts
+			(xy 78.74 76.2) (xy 85.09 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "207963aa-07d7-411d-b9cc-dd0dfaedeb93")
+	)
+	(wire
+		(pts
 			(xy 355.6 55.88) (xy 365.76 55.88)
 		)
 		(stroke
@@ -8503,16 +8215,6 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 87.63) (xy 81.28 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2d2c8cfe-5414-45d2-b6c9-39165ebea5d2")
-	)
-	(wire
-		(pts
 			(xy 381 24.13) (xy 386.08 24.13)
 		)
 		(stroke
@@ -8573,13 +8275,13 @@
 	)
 	(wire
 		(pts
-			(xy 81.28 72.39) (xy 87.63 72.39)
+			(xy 95.25 81.28) (xy 104.14 81.28)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "32566482-75c6-4ec1-ac72-57a13225a556")
+		(uuid "3373c18b-c324-4978-ac85-37fb4b1b048d")
 	)
 	(wire
 		(pts
@@ -8723,16 +8425,6 @@
 	)
 	(wire
 		(pts
-			(xy 81.28 71.12) (xy 81.28 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "451016a7-55d4-45ff-928a-f569caecfa1c")
-	)
-	(wire
-		(pts
 			(xy 130.81 25.4) (xy 130.81 26.67)
 		)
 		(stroke
@@ -8813,16 +8505,6 @@
 	)
 	(wire
 		(pts
-			(xy 81.28 86.36) (xy 81.28 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4b63c7a2-8fce-4c64-9d15-f074b8073597")
-	)
-	(wire
-		(pts
 			(xy 295.91 107.95) (xy 295.91 109.22)
 		)
 		(stroke
@@ -8840,6 +8522,16 @@
 			(type default)
 		)
 		(uuid "4d85e484-a9d6-46c3-8d3a-53418653065d")
+	)
+	(wire
+		(pts
+			(xy 78.74 83.82) (xy 85.09 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e69219c-0a8f-4cb7-bb17-55ff62c0e67d")
 	)
 	(wire
 		(pts
@@ -9120,6 +8812,16 @@
 			(type default)
 		)
 		(uuid "62969fb6-258d-49f4-b7cc-ba81626c9457")
+	)
+	(wire
+		(pts
+			(xy 77.47 76.2) (xy 78.74 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "63b904f4-3566-4980-8d92-0239ce140ba5")
 	)
 	(wire
 		(pts
@@ -9623,16 +9325,6 @@
 	)
 	(wire
 		(pts
-			(xy 81.28 87.63) (xy 87.63 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8a76445f-89d8-4024-bdb4-11e7f308e60a")
-	)
-	(wire
-		(pts
 			(xy 29.21 161.29) (xy 29.21 166.37)
 		)
 		(stroke
@@ -9960,6 +9652,16 @@
 			(type default)
 		)
 		(uuid "a86e67b7-f610-4de6-b750-3d9349a08fd2")
+	)
+	(wire
+		(pts
+			(xy 78.74 74.93) (xy 78.74 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a8acd26b-d43d-40f0-8d17-d8e331250d29")
 	)
 	(wire
 		(pts
@@ -10293,6 +9995,16 @@
 	)
 	(wire
 		(pts
+			(xy 85.09 76.2) (xy 85.09 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c12cbf80-4880-4f26-86af-94c95726625d")
+	)
+	(wire
+		(pts
 			(xy 130.81 35.56) (xy 130.81 34.29)
 		)
 		(stroke
@@ -10620,16 +10332,6 @@
 			(type default)
 		)
 		(uuid "d847fad4-e5b6-498e-89e9-91026a8ddc89")
-	)
-	(wire
-		(pts
-			(xy 92.71 80.01) (xy 101.6 80.01)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d856c61e-4551-408e-85ec-e071767e29dd")
 	)
 	(wire
 		(pts
@@ -11000,6 +10702,16 @@
 			(type default)
 		)
 		(uuid "fb24b400-2504-4423-a563-73197636a67f")
+	)
+	(wire
+		(pts
+			(xy 78.74 82.55) (xy 78.74 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb98f652-3316-42b6-8363-6200b4689443")
 	)
 	(wire
 		(pts
@@ -11481,6 +11193,16 @@
 		)
 		(uuid "9ddf3bdc-62b6-4870-bcf6-5bea91e5faed")
 	)
+	(label "V_MAIN"
+		(at 104.14 81.28 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "9ecc3d01-954e-41a0-9cc1-69fce0b84790")
+	)
 	(label "ELRS_RX"
 		(at 246.38 101.6 180)
 		(effects
@@ -11530,16 +11252,6 @@
 			(justify right bottom)
 		)
 		(uuid "b4780574-175f-4f77-a63e-c61d6410fc06")
-	)
-	(label "V_MAIN"
-		(at 101.6 80.01 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "ba9cd556-4baa-4421-b13e-c4d1319f6664")
 	)
 	(label "CS2"
 		(at 318.77 106.68 0)
@@ -12426,76 +12138,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Diode:PMEG6010CEH")
-		(at 81.28 96.52 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "12f8cb48-01a0-4ec1-81d1-1bbcf4138c1a")
-		(property "Reference" "D3"
-			(at 83.82 95.5674 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "PMEG6010CEH"
-			(at 83.82 98.1074 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "Diode_SMD:D_SOD-123F"
-			(at 85.725 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PMEG6010CEH_PMEG6010CEJ.pdf"
-			(at 81.28 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "60V, 1A very low Vf MEGA Schottky barrier rectifier, SOD-123F"
-			(at 81.28 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "7adcf82e-13d7-4d83-a791-3d7b5f033a9b")
-		)
-		(pin "1"
-			(uuid "fa730da5-99e0-4c5e-b9dd-d4da9843b3b6")
-		)
-		(instances
-			(project ""
-				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
-					(reference "D3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 29.21 114.3 0)
 		(unit 1)
@@ -12840,79 +12482,6 @@
 			(project "STM32_FlightController"
 				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
 					(reference "#PWR049")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Diode:BAT54C")
-		(at 87.63 80.01 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "24da1573-9b92-4759-8345-2fccb0c612c0")
-		(property "Reference" "D2"
-			(at 90.678 71.374 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BAT54C"
-			(at 87.63 89.408 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 84.455 78.105 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.diodes.com/_files/datasheets/ds11005.pdf"
-			(at 87.63 82.042 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "dual schottky barrier diode, common cathode"
-			(at 87.63 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "2a3cbdb4-1c88-4f79-93b0-ca84f7558b49")
-		)
-		(pin "3"
-			(uuid "abee6a61-3b78-4c43-a75e-c98d146bf9a2")
-		)
-		(pin "2"
-			(uuid "03c4433b-a0af-4a29-ae8d-17a6856b19a6")
-		)
-		(instances
-			(project ""
-				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
-					(reference "D2")
 					(unit 1)
 				)
 			)
@@ -13383,72 +12952,6 @@
 			(project "STM32_FlightController"
 				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
 					(reference "J14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 80.01 87.63 90)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "35f5297a-91a0-4cdd-992b-cf467c45ffae")
-		(property "Reference" "#FLG02"
-			(at 78.105 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 72.39 87.63 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 80.01 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 80.01 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 80.01 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "448b71a5-e166-47c9-9b29-41d81dfe7a0f")
-		)
-		(instances
-			(project "STM32_FlightController"
-				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
-					(reference "#FLG02")
 					(unit 1)
 				)
 			)
@@ -16508,6 +16011,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 78.74 74.93 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "81e615d6-1fe4-45f6-b94b-e5c50c15cc43")
+		(property "Reference" "#PWR029"
+			(at 78.74 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 78.74 71.374 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 78.74 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 78.74 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c4931761-f590-4fc8-ab1e-ead300659f85")
+		)
+		(instances
+			(project "STM32_FlightController"
+				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
+					(reference "#PWR029")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 129.54 113.03 0)
 		(unit 1)
@@ -17119,6 +16687,71 @@
 			(project "STM32_FlightController"
 				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
 					(reference "#PWR038")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VBUS")
+		(at 78.74 82.55 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "94e1f53b-08d5-47f5-bb55-52da34ccd3ad")
+		(property "Reference" "#PWR030"
+			(at 78.74 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 78.74 78.994 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 78.74 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 78.74 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e00d9e7d-8569-4d7b-b989-fc9d0523585d")
+		)
+		(instances
+			(project "STM32_FlightController"
+				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -18058,71 +17691,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:VBUS")
-		(at 81.28 71.12 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "adb6d1fa-c6d5-401d-a054-b4fe61f8461b")
-		(property "Reference" "#PWR017"
-			(at 81.28 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "VBUS"
-			(at 81.28 67.564 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 81.28 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 81.28 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 81.28 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a9898293-3f7c-45c2-a380-04ce698b221c")
-		)
-		(instances
-			(project "STM32_FlightController"
-				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
-					(reference "#PWR017")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Sensor_Motion:ICM-20948")
 		(at 378.46 55.88 0)
 		(unit 1)
@@ -18590,6 +18158,72 @@
 			(project "STM32_FlightController"
 				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
 					(reference "#PWR041")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 77.47 76.2 90)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c0d2e58f-7f30-4029-ac4b-cba1a301f87a")
+		(property "Reference" "#FLG04"
+			(at 75.565 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 69.85 76.2 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 77.47 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 77.47 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 77.47 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "88f888c8-e585-478c-89af-26fa2ddb6b8b")
+		)
+		(instances
+			(project "STM32_FlightController"
+				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
+					(reference "#FLG04")
 					(unit 1)
 				)
 			)
@@ -19733,72 +19367,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 81.28 86.36 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d95be318-e534-47d8-aa8e-396d985cebaf")
-		(property "Reference" "#PWR018"
-			(at 81.28 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 81.28 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 81.28 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 81.28 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 81.28 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "c123fe7d-78d3-46f0-84d2-adb8edbe4e4d")
-		)
-		(instances
-			(project "STM32_FlightController"
-				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
-					(reference "#PWR018")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Connector:Conn_01x01_Socket")
 		(at 97.79 162.56 0)
 		(mirror y)
@@ -20392,6 +19960,76 @@
 			(project "STM32_FlightController"
 				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
 					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D_Schottky_Dual_CommonCathode_AAK_Parallel")
+		(at 90.17 81.28 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fa0948d4-0418-46f6-a57d-968dd3fe4f24")
+		(property "Reference" "D2"
+			(at 90.1065 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PMEG2005CT,215"
+			(at 95.504 86.614 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 91.44 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 91.44 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual Schottky diode, common cathode on pin 3"
+			(at 90.17 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "74233855-eae6-4ee4-a32a-188f2fb63135")
+		)
+		(pin "2"
+			(uuid "5fd59fe0-180d-4a85-830c-1e2b2729e4ea")
+		)
+		(pin "3"
+			(uuid "ad5bfd56-6c96-45a3-ba1e-9d3290357691")
+		)
+		(instances
+			(project ""
+				(path "/a6fc9d05-aa55-4563-bf4c-1c56ae2e96b7"
+					(reference "D2")
 					(unit 1)
 				)
 			)
