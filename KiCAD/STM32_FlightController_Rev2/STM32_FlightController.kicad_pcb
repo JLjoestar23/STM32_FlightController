@@ -3162,7 +3162,7 @@
 	(footprint "MountingHole:MountingHole_4mm"
 		(layer "F.Cu")
 		(uuid "3bfb6d8b-c80a-45b8-af22-bcc74aa91ecc")
-		(at 99.75 50.525)
+		(at 99.5 50.25)
 		(descr "Mounting Hole 4mm, no annular")
 		(tags "mounting hole 4mm no annular")
 		(property "Reference" "H1"
@@ -4767,7 +4767,7 @@
 	(footprint "MountingHole:MountingHole_4mm"
 		(layer "F.Cu")
 		(uuid "7089f40f-3352-43bb-aa38-6aa45ac2a0a8")
-		(at 129.75 80.525)
+		(at 130 80.75)
 		(descr "Mounting Hole 4mm, no annular")
 		(tags "mounting hole 4mm no annular")
 		(property "Reference" "H4"
@@ -8958,7 +8958,7 @@
 	(footprint "MountingHole:MountingHole_4mm"
 		(layer "F.Cu")
 		(uuid "bd092961-0ea1-4356-85d7-40a86c9b7947")
-		(at 129.75 50.525)
+		(at 130 50.25)
 		(descr "Mounting Hole 4mm, no annular")
 		(tags "mounting hole 4mm no annular")
 		(property "Reference" "H2"
@@ -9062,7 +9062,7 @@
 	(footprint "MountingHole:MountingHole_4mm"
 		(layer "F.Cu")
 		(uuid "bd2f1f09-aa51-457b-971c-1ef289fd0f96")
-		(at 99.75 80.525)
+		(at 99.5 80.75)
 		(descr "Mounting Hole 4mm, no annular")
 		(tags "mounting hole 4mm no annular")
 		(property "Reference" "H3"
