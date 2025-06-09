@@ -1,0 +1,16 @@
+!SESSION 2025-06-09 12:06:08.921 -----------------------------------------------
+eclipse.buildId=Version 1.18.1
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  C:\Users\jliu3\OneDrive - Olin College of Engineering\Documents\GitHub\STM32_FlightController\Firmware+Software\.project
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 C:\Users\jliu3\OneDrive - Olin College of Engineering\Documents\GitHub\STM32_FlightController\Firmware+Software\.project
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-06-09 12:06:39.702
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-06-09 12:06:39.705
+!MESSAGE Log4j2 initialized with config file C:\Users\jliu3\OneDrive - Olin College of Engineering\Documents\GitHub\STM32_FlightController\Firmware+Software\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-06-09 12:06:43.527
+!MESSAGE Started RMI Server, listening on port 41337
