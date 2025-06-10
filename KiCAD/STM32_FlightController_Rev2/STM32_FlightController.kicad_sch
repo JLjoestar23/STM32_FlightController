@@ -8327,16 +8327,6 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 78.74) (xy 195.58 78.74)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "08ee2ec8-110a-490c-97af-5ab0717a9323")
-	)
-	(wire
-		(pts
 			(xy 279.4 71.12) (xy 283.21 71.12)
 		)
 		(stroke
@@ -8907,6 +8897,16 @@
 	)
 	(wire
 		(pts
+			(xy 246.38 53.34) (xy 236.22 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "407f7af9-c7dc-4c2f-8fc8-f038d5c81609")
+	)
+	(wire
+		(pts
 			(xy 101.6 156.21) (xy 106.68 156.21)
 		)
 		(stroke
@@ -9437,16 +9437,6 @@
 	)
 	(wire
 		(pts
-			(xy 246.38 53.34) (xy 236.22 53.34)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6a3d673a-fb24-4307-8667-0d98e5a90d10")
-	)
-	(wire
-		(pts
 			(xy 19.05 143.51) (xy 19.05 156.21)
 		)
 		(stroke
@@ -9954,6 +9944,16 @@
 			(type default)
 		)
 		(uuid "941967d6-19d6-424f-9ba9-cc03dc8ca5a7")
+	)
+	(wire
+		(pts
+			(xy 185.42 78.74) (xy 195.58 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "94a3c02e-6fe0-4345-b6c5-e62ae32a0f63")
 	)
 	(wire
 		(pts
@@ -11455,16 +11455,6 @@
 		)
 		(uuid "1537b435-cbb1-4206-8d3e-1ebfe1cb838a")
 	)
-	(label "INT1"
-		(at 246.38 53.34 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "196173b0-1d89-4979-b3ce-9523b6131f0b")
-	)
 	(label "GPS_TX"
 		(at 246.38 40.64 180)
 		(effects
@@ -11624,6 +11614,16 @@
 			(justify left bottom)
 		)
 		(uuid "690dc058-2d70-4643-8b3e-757c1219ebae")
+	)
+	(label "INT1"
+		(at 185.42 78.74 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "696d544a-963c-407f-b8d5-c3bcf64547ad")
 	)
 	(label "S1"
 		(at 246.38 50.8 180)
@@ -11876,6 +11876,16 @@
 		(uuid "b4780574-175f-4f77-a63e-c61d6410fc06")
 	)
 	(label "CS2"
+		(at 246.38 53.34 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b7c6f823-7e06-4abb-aba0-3dc54ca36c09")
+	)
+	(label "CS2"
 		(at 318.77 106.68 0)
 		(effects
 			(font
@@ -11984,16 +11994,6 @@
 			(justify right bottom)
 		)
 		(uuid "def80106-42dd-43bb-a310-53d89eb07c81")
-	)
-	(label "CS2"
-		(at 185.42 78.74 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e13f8ab2-3e9f-44e8-8b8d-a6ca1fd15861")
 	)
 	(label "IMU_MOSI"
 		(at 355.6 54.61 0)
