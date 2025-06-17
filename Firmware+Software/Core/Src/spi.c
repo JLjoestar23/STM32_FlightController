@@ -50,19 +50,19 @@ void NCS_pins_init() {
 }
 
 
+/*
+ * @brief Configures and enables the SPI pins with a baud rate to 10.5 MBits/s, full duplex, MSB first, and 16 bit data frame
+ * No bit mask macros used here, just manual bit shifting
+ */
 void SPI_configure() {
-	/*
-	 * Configures and enables the SPI pins with a baud rate to 10.5 MBits/s, full duplex, MSB first, and 16 bit data frame
-	 *
-	 * No bit mask macros used here, just manual bit shifting
-	 */
+
 	RCC->AHB1ENR |= RCC_APB1ENR_SPI3EN; // enable clock for SPI3
 
-	// set clock to fPCLK/4 (10.5 MBits/s)
-	// according to data sheet: change bits 3,4,5 on CR1 so that BR[2:0] = 001
+	// set clock to fPCLK/8 (5.25 MBits/s)
+	// according to data sheet: change bits 3,4,5 on CR1 so that BR[2:0] = 010
 	SPI3->CR1 &= ~(0x1U << 3);
-	SPI3->CR1 &= ~(0x1U << 4);
-	SPI3->CR1 |= (0x1U << 5);
+	SPI3->CR1 |= (0x1U << 4);
+	SPI3->CR1 &= ~(0x1U << 5);
 
 	SPI3->CR1 &= ~(0x1U << 10); // enable full duplex communication
 
@@ -81,7 +81,7 @@ void SPI_configure() {
 
 }
 
-void SPI_write(uint8_t *data, uint32_t size) {
+void SPI_write(uint8_t *TxData, uint32_t size) {
 	/*
 	 * Initializes SPI write
 	 *
@@ -92,13 +92,13 @@ void SPI_write(uint8_t *data, uint32_t size) {
 	while(i < size) {
 		while(!(SPI3->SR & (SPI_SR_TXE))){} // wait until the transmit buffer (TXE) is empty
 
-		SPI3->DR = (uint8_t) data[i]; // write data to data register casted as uint8_t
+		SPI3->DR = (uint8_t) TxData[i]; // write data to data register casted as uint8_t
 		i++; // increment
 	}
 
 	while(!(SPI3->SR & (SPI_SR_TXE))) {} // wait until TXE is set
 
-	while(!(SPI3->SR & (SPI_SR_BSY))) {} // wait for busy flag to reset
+	while((SPI3->SR & (SPI_SR_BSY))) {} // wait for busy flag to reset
 
 	// clear overrun (OVR) flag
 	(void) SPI3->DR;
@@ -106,7 +106,7 @@ void SPI_write(uint8_t *data, uint32_t size) {
 
 }
 
-void SPI_read(uint8_t *data, uint32_t size) {
+void SPI_read(uint8_t *RxData, uint32_t size) {
 	/*
 	 *
 	 */
@@ -115,9 +115,49 @@ void SPI_read(uint8_t *data, uint32_t size) {
 
 		while(!(SPI3->SR & (SPI_SR_RXNE))){} // wait Receive Buffer Not Empty (RXNE) to be set
 
-		*data++ = (SPI->DR); // read data from the register
+		*RxData++ = (SPI->DR); // read data from the register
 		size--; // increment
 	}
+}
+
+uint8_t SPI_read_write(uint8_t *TxData, uint8_t *RxData, uint32_t size, uint32_t timeout_ms) {
+
+	uint32_t i = 0;
+	uint32_t start = HAL_getTick();
+
+
+
+	if ((TxData == NULL) || (RxData == NULL) || (size == 0U)) {
+	    return SPI_ERROR;
+	}
+
+	while(i < size) {
+		while(!(SPI3->SR & (SPI_SR_TXE))) {
+			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+		} // wait until the transmit buffer (TXE) is empty, return a timeout if necessary
+
+		SPI3->DR = (uint8_t) TxData[i]; // write data to data register casted as uint8_t
+
+		while(!(SPI3->SR & (SPI_SR_RXNE))) {
+			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+		} // wait Receive Buffer Not Empty (RXNE) to be set, return timeout if necessary
+
+		RxData[i] = SPI3->DR;
+
+		i++; // increment
+	}
+
+	while(!(SPI3->SR & (SPI_SR_TXE))) {} // wait until TXE is set
+
+	while((SPI3->SR & (SPI_SR_BSY))) {
+		if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+	} // wait for busy flag to reset, return timeout if necessary
+
+	// clear overrun (OVR) flag
+	(void) SPI3->DR;
+	(void) SPI3->SR;
+
+	return SPI_OK;
 }
 
 void peripheral_select(peripheral_select peripheral) {
