@@ -1,10 +1,12 @@
 #include "spi.h"
 #include "stm32f4xx.h"
 
+
+/*
+ * @brief Initializes which GPIO pins are to be utilized in SPI mode
+ */
 void SPI_pins_init() {
 	/*
-	 * Initializes which GPIO pins are to be utilized in SPI mode
-	 *
 	 * RCC_AH1BRENR_GPIOEN is a bit mask macro for the register location that enables the clock
 	 * GPIO_MODER_MODEx_y is a bit mask macro for the register location that determines operating mode of pin x by bit y
 	 */
@@ -18,12 +20,14 @@ void SPI_pins_init() {
 	GPIOC->MODER &= ~(GPIO_MODER_MODE10_0);
 	GPIOC->MODER |= GPIO_MODER_MODE10_1;
 
-	// Set Alternate Function 6 (AF6） for SPI3 on PB4, PB5, and PC10
-	// AF[0] for pins 0-7, AF[1] for pins 8-15
-	// Bit shift is a multiple of 4 as each pin has 4 bits to define a function
-	// PB4 = AFR[0], index = 4 * 4 = 16
-	// PB5 = AFR[0], index = 5 * 4 = 20
-	// PC10 = AFR[1], index = (10-8)*4 = 8
+	/*
+	 * Set Alternate Function 6 (AF6） for SPI3 on PB4, PB5, and PC10
+	 * AF[0] for pins 0-7, AF[1] for pins 8-15
+	 * Bit shift is a multiple of 4 as each pin has 4 bits to define a function
+	 * PB4 = AFR[0], index = 4 * 4 = 16
+	 * PB5 = AFR[0], index = 5 * 4 = 20
+	 * PC10 = AFR[1], index = (10-8)*4 = 8
+	 */
 
 	GPIOB->AFR[0] |= ~((0xF << 16) | (0xF << 20)); // zeroing register bits in preparation for potential overwrite
 	GPIOB->AFR[0] |= ((0x6 << 16) | (0x6 << 20)); // setting PB4 and PB5 to AF6 (SPI MISO and MOSI)
@@ -32,10 +36,11 @@ void SPI_pins_init() {
 
 }
 
+/*
+ * @brief Initializes which GPIO pins are to be utilized as not chip select pins
+ */
 void NCS_pins_init() {
 	/*
-	 * Initializes which GPIO pins are to be utilized as not chip select pins
-	 *
 	 * Uses similar macros to SPI_pins_init()
 	 * GPIO_BSRR_BSx are bit mask macros for the Bit Set and Reset register that sets them high or low
 	 */
@@ -51,7 +56,7 @@ void NCS_pins_init() {
 
 
 /*
- * @brief Configures and enables the SPI pins with a baud rate to 10.5 MBits/s, full duplex, MSB first, and 16 bit data frame
+ * @brief Configures and enables the SPI pins with a baud rate to 5.25 MBits/s, full duplex, MSB first, and 16 bit data frame
  * No bit mask macros used here, just manual bit shifting
  */
 void SPI_configure() {
@@ -81,77 +86,43 @@ void SPI_configure() {
 
 }
 
-void SPI_write(uint8_t *TxData, uint32_t size) {
-	/*
-	 * Initializes SPI write
-	 *
-	 *
-	 */
-	uint32_t i = 0;
-
-	while(i < size) {
-		while(!(SPI3->SR & (SPI_SR_TXE))){} // wait until the transmit buffer (TXE) is empty
-
-		SPI3->DR = (uint8_t) TxData[i]; // write data to data register casted as uint8_t
-		i++; // increment
-	}
-
-	while(!(SPI3->SR & (SPI_SR_TXE))) {} // wait until TXE is set
-
-	while((SPI3->SR & (SPI_SR_BSY))) {} // wait for busy flag to reset
-
-	// clear overrun (OVR) flag
-	(void) SPI3->DR;
-	(void) SPI3->SR;
-
-}
-
-void SPI_read(uint8_t *RxData, uint32_t size) {
-	/*
-	 *
-	 */
-	while(size) {
-		SPI3->DR = 0xFF; // send dummy data
-
-		while(!(SPI3->SR & (SPI_SR_RXNE))){} // wait Receive Buffer Not Empty (RXNE) to be set
-
-		*RxData++ = (SPI->DR); // read data from the register
-		size--; // increment
-	}
-}
-
-uint8_t SPI_read_write(uint8_t *TxData, uint8_t *RxData, uint32_t size, uint32_t timeout_ms) {
+/*
+ * @brief Transmit an amount of data in blocking mode
+ * @params TxData: pointer to the transmit data buffer
+ * @params size: amount of data elements
+ * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
+ */
+SPI_status SPI_write(uint8_t *TxData, uint32_t size) {
 
 	uint32_t i = 0;
-	uint32_t start = HAL_getTick();
+	uint32_t start;
 
-
-
-	if ((TxData == NULL) || (RxData == NULL) || (size == 0U)) {
-	    return SPI_ERROR;
+	if ((TxData == NULL) || (size == 0U)) {
+		return SPI_ERROR;
 	}
 
 	while(i < size) {
+		// wait until the transmit buffer (TXE) is empty, return a timeout if necessary
+		start = HAL_getTick();
 		while(!(SPI3->SR & (SPI_SR_TXE))) {
 			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
-		} // wait until the transmit buffer (TXE) is empty, return a timeout if necessary
+		}
 
-		SPI3->DR = (uint8_t) TxData[i]; // write data to data register casted as uint8_t
-
-		while(!(SPI3->SR & (SPI_SR_RXNE))) {
-			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
-		} // wait Receive Buffer Not Empty (RXNE) to be set, return timeout if necessary
-
-		RxData[i] = SPI3->DR;
-
+		SPI3->DR = (uint8_t) TxData[i]; // write data to data register
 		i++; // increment
 	}
 
-	while(!(SPI3->SR & (SPI_SR_TXE))) {} // wait until TXE is set
+	// wait until TXE is set
+	start = HAL_getTick();
+	while(!(SPI3->SR & (SPI_SR_TXE))) {
+		if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+	}
 
+	// wait for busy flag to reset, return timeout if necessary
+	start = HAL_getTick();
 	while((SPI3->SR & (SPI_SR_BSY))) {
 		if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
-	} // wait for busy flag to reset, return timeout if necessary
+	}
 
 	// clear overrun (OVR) flag
 	(void) SPI3->DR;
@@ -160,6 +131,94 @@ uint8_t SPI_read_write(uint8_t *TxData, uint8_t *RxData, uint32_t size, uint32_t
 	return SPI_OK;
 }
 
+/*
+ * @brief Receive an amount of data in blocking mode
+ * @params RxData: pointer to the receive data buffer
+ * @params size: amount of data elements
+ * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
+ */
+SPI_status SPI_read(uint8_t *RxData, uint32_t size) {
+
+	uint32_t start;
+
+	if ((RxData == NULL) || (size == 0U)) {
+		    return SPI_ERROR;
+	}
+
+	while(size) {
+		SPI3->DR = 0xFF; // send dummy data
+
+		// wait for Receive Buffer Not Empty (RXNE) to be set, return timeout if necessary
+		start = HAL_getTick();
+		while(!(SPI3->SR & (SPI_SR_RXNE))) {
+			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+		}
+
+		*RxData++ = (SPI->DR); // read data from the register
+		size--; // increment
+	}
+}
+
+/**
+ * @brief Full-duplex SPI read/write function in blocking mode
+ * @param TxData: pointer to the transmit data buffer
+ * @param RxData: pointer to the receive data buffer
+ * @param size: amount of data elements
+ * @param timeout_ms: timeout duration in ms
+ * @returns SPI_OK, SPI_ERROR, or SPI_TIMEOUT
+ */
+SPI_status SPI_read_write(const uint8_t *TxData, uint8_t *RxData, uint32_t size, uint32_t timeout_ms) {
+
+	uint32_t i = 0;
+	uint32_t start;
+
+	if ((TxData == NULL) || (RxData == NULL) || (size == 0U)) {
+	    return SPI_ERROR;
+	}
+
+	while(i < size) {
+		// wait until the transmit buffer (TXE) is empty, return a timeout if necessary
+		start = HAL_getTick();
+		while(!(SPI3->SR & (SPI_SR_TXE))) {
+			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+		}
+
+		SPI3->DR = (uint8_t) TxData[i]; // write data to data register
+
+		// wait for Receive Buffer Not Empty (RXNE) to be set, return timeout if necessary
+		start = HAL_getTick();
+		while(!(SPI3->SR & (SPI_SR_RXNE))) {
+			if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+		}
+
+		RxData[i] = SPI3->DR; // read data from the data register
+
+		i++; // increment
+	}
+
+	// wait until TXE is set
+	start = HAL_getTick();
+	while(!(SPI3->SR & (SPI_SR_TXE))) {
+		if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+	}
+
+	// wait for busy flag to reset, return timeout if necessary
+	start = HAL_getTick();
+	while((SPI3->SR & (SPI_SR_BSY))) {
+		if ((HAL_getTick() - start) > timeout_ms) return SPI_TIMEOUT;
+	}
+
+	// clear overrun (OVR) flag
+	(void) SPI3->DR;
+	(void) SPI3->SR;
+
+	return SPI_OK;
+}
+
+/*
+ * @brief Controls NCS low
+ * @params peripheral: enum type that defines which peripheral to begin data transfer with
+ */
 void peripheral_select(peripheral_select peripheral) {
 	switch(peripheral) {
 		// pulls either PB9 or PB8 low depending on which sensor the controller wants to begin communication with
@@ -169,11 +228,13 @@ void peripheral_select(peripheral_select peripheral) {
 	}
 }
 
+/*
+ * @brief Controls NCS high
+ * @params peripheral: enum type that defines which peripheral to end data transfer with
+ */
 void peripheral_select(peripheral_select peripheral) {
 	switch(peripheral) {
-		/*
-		 * Pulls either PB9 or PB8 high depending on which sensor the controller wants to end communication with
-		 */
+		//Pulls either PB9 or PB8 high depending on which sensor the controller wants to end communication with
 		case ICM20948_NCS: GPIOB->BSRR = GPIO_BSRR_BS9; break;
 		case BMP390_NCS: GPIOB->BSRR = GPIO_BSRR_BS8; break;
 		default: break;
