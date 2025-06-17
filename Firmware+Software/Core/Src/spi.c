@@ -2,14 +2,21 @@
 #include "stm32f4xx.h"
 
 void SPI_pins_init() {
-
+	/*
+	 * Initializes which GPIO pins are to be utilized in SPI mode
+	 *
+	 * RCC_AH1BRENR_GPIOEN is a bit mask macro for the register location that enables the clock
+	 * GPIO_MODER_MODEx_y is a bit mask macro for the register location that determines operating mode of pin x by bit y
+	 */
 	RCC->AHB1ENR |= RCC_AH1BRENR_GPIOEN; //enable clock for GPIOA
 
-	GPIOB->MODER &= ~(GPIO_MODER_MODE4 | GPIO_MODER_MODE5); // zeroing register bits in preparation for potential overwrite
-	GPIOB->MODER |= GPIO_MODER_MODE4_1| GPIO_MODER_MODE5_1; //set PB4 and PB5 to alternate function mode
+	// set PB4 and PB5 to alternate function mode
+	GPIOB->MODER &= ~(GPIO_MODER_MODE4_0 | GPIO_MODER_MODE5_0);
+	GPIOB->MODER |= GPIO_MODER_MODE4_1| GPIO_MODER_MODE5_1;
 
-	GPIOC->MODER &= ~(GPIO_MODER_MODE10); // zeroing register bits in preparation for potential overwrite
-	GPIOC->MODER |= GPIO_MODER_MODE10; // set PC10 to alternate function mode
+	// set PC10 to alternate function mode
+	GPIOC->MODER &= ~(GPIO_MODER_MODE10_0);
+	GPIOC->MODER |= GPIO_MODER_MODE10_1;
 
 	// Set Alternate Function 6 (AF6） for SPI3 on PB4, PB5, and PC10
 	// AF[0] for pins 0-7, AF[1] for pins 8-15
@@ -23,16 +30,15 @@ void SPI_pins_init() {
 	GPIOC->AFR[1] |= ~(0xF << 8); // zeroing register bits in preparation for potential overwrite
 	GPIOC->AFR[1] |= (0x6 << 8); // setting PC10 to AF6 (SPI3 SCK)
 
-	RCC->APB1ENR |= RCC_APB1ENR_SPI3EN; // enable clock to access SPI3
-
-	SPI3->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI; //software peripheral management, allows software control over NCS
-	SPI3->CR1 |= SPI_CR1_MSTR; // set SPI as controller mode
-	SPI3->CR1 |= SPI_CR1_SPE; // enable SPI peripheral
-
 }
 
 void NCS_pins_init() {
-
+	/*
+	 * Initializes which GPIO pins are to be utilized as not chip select pins
+	 *
+	 * Uses similar macros to SPI_pins_init()
+	 * GPIO_BSRR_BSx are bit mask macros for the Bit Set and Reset register that sets them high or low
+	 */
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // enable clock for GPIOA
 
 	// set PA8 and PA9 to Output Mode
@@ -41,4 +47,95 @@ void NCS_pins_init() {
 
 	GPIOA->BSRR = GPIO_BSRR_BS8 | GPIO_BSRR_BS9; // Set PA8 to PA9 to high state
 
+}
+
+
+void SPI_configure() {
+	/*
+	 * Configures and enables the SPI pins with a baud rate to 10.5 MBits/s, full duplex, MSB first, and 16 bit data frame
+	 *
+	 * No bit mask macros used here, just manual bit shifting
+	 */
+	RCC->AHB1ENR |= RCC_APB1ENR_SPI3EN; // enable clock for SPI3
+
+	// set clock to fPCLK/4 (10.5 MBits/s)
+	// according to data sheet: change bits 3,4,5 on CR1 so that BR[2:0] = 001
+	SPI3->CR1 &= ~(0x1U << 3);
+	SPI3->CR1 &= ~(0x1U << 4);
+	SPI3->CR1 |= (0x1U << 5);
+
+	SPI3->CR1 &= ~(0x1U << 10); // enable full duplex communication
+
+	SPI3->CR1 &= ~(0x1U << 7); // set MSB first
+
+	SPI3->CR1 |= (0x1U << 2); // set mode to controller
+
+	SPI3->CR1 &= (0x1U << 11); // set data frame format to 16 bits
+
+	// select software peripheral management
+	SPI3->CR1 |= (0x1U << 8);
+	SPI3->CR1 |= (0x1U << 9);
+
+	// enable SPI by setting enable register to 1
+	SPI1->CR1 |= (0x1U << 6);
+
+}
+
+void SPI_write(uint8_t *data, uint32_t size) {
+	/*
+	 * Initializes SPI write
+	 *
+	 *
+	 */
+	uint32_t i = 0;
+
+	while(i < size) {
+		while(!(SPI3->SR & (SPI_SR_TXE))){} // wait until the transmit buffer (TXE) is empty
+
+		SPI3->DR = (uint8_t) data[i]; // write data to data register casted as uint8_t
+		i++; // increment
+	}
+
+	while(!(SPI3->SR & (SPI_SR_TXE))) {} // wait until TXE is set
+
+	while(!(SPI3->SR & (SPI_SR_BSY))) {} // wait for busy flag to reset
+
+	// clear overrun (OVR) flag
+	(void) SPI3->DR;
+	(void) SPI3->SR;
+
+}
+
+void SPI_read(uint8_t *data, uint32_t size) {
+	/*
+	 *
+	 */
+	while(size) {
+		SPI3->DR = 0xFF; // send dummy data
+
+		while(!(SPI3->SR & (SPI_SR_RXNE))){} // wait Receive Buffer Not Empty (RXNE) to be set
+
+		*data++ = (SPI->DR); // read data from the register
+		size--; // increment
+	}
+}
+
+void peripheral_select(peripheral_select peripheral) {
+	switch(peripheral) {
+		// pulls either PB9 or PB8 low depending on which sensor the controller wants to begin communication with
+		case ICM20948_NCS: GPIOB->BSRR = GPIO_BSRR_BR9; break;
+		case BMP390_NCS: GPIOB->BSRR = GPIO_BSRR_BR8; break;
+		default: break;
+	}
+}
+
+void peripheral_select(peripheral_select peripheral) {
+	switch(peripheral) {
+		/*
+		 * Pulls either PB9 or PB8 high depending on which sensor the controller wants to end communication with
+		 */
+		case ICM20948_NCS: GPIOB->BSRR = GPIO_BSRR_BS9; break;
+		case BMP390_NCS: GPIOB->BSRR = GPIO_BSRR_BS8; break;
+		default: break;
+	}
 }
