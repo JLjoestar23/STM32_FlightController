@@ -232,7 +232,7 @@ void peripheral_select(peripheral_select peripheral) {
  * @brief Controls NCS high
  * @params peripheral: enum type that defines which peripheral to end data transfer with
  */
-void peripheral_select(peripheral_select peripheral) {
+void peripheral_deselect(peripheral_select peripheral) {
 	switch(peripheral) {
 		//Pulls either PB9 or PB8 high depending on which sensor the controller wants to end communication with
 		case ICM20948_NCS: GPIOB->BSRR = GPIO_BSRR_BS9; break;
