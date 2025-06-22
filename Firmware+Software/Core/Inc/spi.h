@@ -2,6 +2,7 @@
 #define INC_SPI_H_
 
 #include "stdint.h"
+#include "stm32f4xx.h"
 
 typedef enum {
 	ICM20948_NCS = 0,

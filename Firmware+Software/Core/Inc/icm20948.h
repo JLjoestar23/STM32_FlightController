@@ -8,11 +8,82 @@
 #ifndef INC_ICM20948_H_
 #define INC_ICM20948_H_
 
-#include "stdint.h";
+#include "stdint.h"
+#include "spi.h"
+#include "stm32f4xx.h"
+
+#define IMU_ACCEL_READ 			0x2D
+
+// User Bank Selection related
+#define USER_BANK_SEL			0x7F
+#define USER_BANK_0 			0x00
+#define USER_BANK_1				0x10
+#define USER_BANK_2				0x20
+#define USER_BANK_3				0x30
+
+// configuration related registers
+// User Bank 0
+#define WHO_AM_I				0x00
+#define USER_CTRL				0x03
+#define PWR_MGMT_1				0x06
+#define PWR_MGMT_2				0x07
+#define INT_PIN_CFG				0x0F
+
+
+// User Bank 2
+#define GYRO_SMPL_RATE			0x00
+#define GYRO_CFG_1				0x01
+#define ACC_SMPL_RATE_1			0x10
+#define ACC_SMPL_RATE_2			0x11
+#define ACC_CFG_1				0x14
+
+// User Bank 3
+#define I2C_MST_CTRL			0x01
+#define I2C_MST_DELAY_CTRL		0x02
+#define I2C_SLV0_CTRL			0x05
+
+
+// structures
+struct vec3 {
+	float x;
+	float y;
+	float z;
+};
+
+struct quat4 {
+	float a;
+	float b;
+	float c;
+	float d;
+};
+
+typedef struct {
+
+	// conversion constants to be applied to raw measurements
+	float accel_conversion;
+	float gyro_conversion;
+	float mag_conversion;
+
+	// x, y, z component measurements
+	float A[3];
+	float G[3];
+	float M[3];
+
+} imu;
+
+// general read/write to register functions
+uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data);
+
+uint8_t write_imu_reg(uint8_t reg_addr, uint8_t *data);
+
+// initialize the ICM20948
+uint8_t imu_init(void);
+
+// functions to read vector component measurements from each sensor
+uint8_t read_accel_vec();
+
+uint8_t read_gyro_vec();
+
+uint8_t read_mag_vec();
 
 #endif /* INC_ICM20948_H_ */
-
-
-void read_accel() {
-
-}
