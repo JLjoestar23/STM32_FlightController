@@ -1,6 +1,4 @@
 #include "spi.h"
-#include "stm32f4xx.h"
-
 
 /*
  * @brief Initializes which GPIO pins are to be utilized in SPI mode
@@ -75,7 +73,7 @@ void SPI_configure() {
 
 	SPI3->CR1 |= (0x1U << 2); // set mode to controller
 
-	SPI3->CR1 &= (0x1U << 11); // set data frame format to 16 bits
+	SPI3->CR1 &= ~(0x1U << 11); // set data frame format to 16 bits
 
 	// select software peripheral management
 	SPI3->CR1 |= (0x1U << 8);
@@ -92,7 +90,7 @@ void SPI_configure() {
  * @params size: amount of data elements
  * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
-SPI_status SPI_write(uint8_t *TxData, uint32_t size) {
+SPI_status SPI_transmit(uint8_t *TxData, uint32_t size) {
 
 	uint32_t i = 0;
 	uint32_t start;
@@ -137,7 +135,7 @@ SPI_status SPI_write(uint8_t *TxData, uint32_t size) {
  * @params size: amount of data elements
  * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
-SPI_status SPI_read(uint8_t *RxData, uint32_t size) {
+SPI_status SPI_receive(uint8_t *RxData, uint32_t size) {
 
 	uint32_t start;
 
@@ -167,7 +165,7 @@ SPI_status SPI_read(uint8_t *RxData, uint32_t size) {
  * @param timeout_ms: timeout duration in ms
  * @returns SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
-SPI_status SPI_read_write(const uint8_t *TxData, uint8_t *RxData, uint32_t size, uint32_t timeout_ms) {
+SPI_status SPI_transmit_receive(const uint8_t *TxData, uint8_t *RxData, uint32_t size, uint32_t timeout_ms) {
 
 	uint32_t i = 0;
 	uint32_t start;
