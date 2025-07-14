@@ -3,7 +3,7 @@
 /*
  * @brief Initializes which GPIO pins are to be utilized in SPI mode
  */
-void SPI_pins_init() {
+void SPI_pins_init(void) {
 	/*
 	 * RCC_AH1BRENR_GPIOEN is a bit mask macro for the register location that enables the clock
 	 * GPIO_MODER_MODEx_y is a bit mask macro for the register location that determines operating mode of pin x by bit y
@@ -37,7 +37,7 @@ void SPI_pins_init() {
 /*
  * @brief Initializes which GPIO pins are to be utilized as not chip select pins
  */
-void NCS_pins_init() {
+void NCS_pins_init(void) {
 	/*
 	 * Uses similar macros to SPI_pins_init()
 	 * GPIO_BSRR_BSx are bit mask macros for the Bit Set and Reset register that sets them high or low
@@ -57,7 +57,7 @@ void NCS_pins_init() {
  * @brief Configures and enables the SPI pins with a baud rate to 5.25 MBits/s, full duplex, MSB first, and 16 bit data frame
  * No bit mask macros used here, just manual bit shifting
  */
-void SPI_configure() {
+void SPI_configure(void) {
 
 	RCC->AHB1ENR |= RCC_APB1ENR_SPI3EN; // enable clock for SPI3
 
@@ -87,10 +87,10 @@ void SPI_configure() {
 /*
  * @brief Transmit an amount of data in blocking mode
  * @params TxData: pointer to the transmit data buffer
- * @params size: amount of data elements
+ * @params size: size of the buffer
  * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
-SPI_status SPI_transmit(uint8_t *TxData, uint32_t size) {
+SPI_status SPI_transmit(uint8_t *TxData, uint32_t size, timeout_ms) {
 
 	uint32_t i = 0;
 	uint32_t start;
@@ -132,10 +132,10 @@ SPI_status SPI_transmit(uint8_t *TxData, uint32_t size) {
 /*
  * @brief Receive an amount of data in blocking mode
  * @params RxData: pointer to the receive data buffer
- * @params size: amount of data elements
+ * @params size: size of the buffer
  * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
-SPI_status SPI_receive(uint8_t *RxData, uint32_t size) {
+SPI_status SPI_receive(uint8_t *RxData, uint32_t size, timeout_ms) {
 
 	uint32_t start;
 
@@ -161,7 +161,7 @@ SPI_status SPI_receive(uint8_t *RxData, uint32_t size) {
  * @brief Full-duplex SPI read/write function in blocking mode
  * @param TxData: pointer to the transmit data buffer
  * @param RxData: pointer to the receive data buffer
- * @param size: amount of data elements
+ * @param size: size of the buffer
  * @param timeout_ms: timeout duration in ms
  * @returns SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
