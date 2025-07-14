@@ -9,82 +9,150 @@
 
 uint8_t imu_init(imu *imu) {
 
-	write_imu_reg(PWR_MGMT_1, 0x80); // reset internal registers on startup
+	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
+	// select User Bank 0 to access certain registers for configuration purposes
+	write_imu_reg(USER_BANK_SEL, USER_BANK_0);
 
-	HAL_Delay(1);
+	HAL_Delay(1); // delay used to give some time after user bank change
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // select User Bank 0 for configuration
+	// writing a value of 0x80 (10000000) to PWR_MGMT_1 register
+	// bit[7] = 1 will reset internal registers on startup
+	write_imu_reg(PWR_MGMT_1, 0x80);
 
-	HAL_Delay(1);
+	HAL_Delay(1); // delay used after reset
 
-	// WHO AM I
-	uint8_t imu_id = 0xFF;
+	// WHO AM I, make into separate function
+	uint8_t imu_id;
 	read_imu_reg(WHO_AM_I, &imu_d);
 
-	write_imu_reg(USER_CTLR, 0x78); // disable I2C, which enables SPI
+	// writing a value of 0x78 (01111000) to the USER_CTRL register
+	// bit[6] = 1 enables FIFO operation mode
+	// bit[5] = 1 enables the I2C master module
+	// bit[4] = 1 resets the I2C slave module, and enables SPI
+	// bit[3] = 1 resets the digital motion processing (DMP) module
+	write_imu_reg(USER_CTRL, 0x78);
 
 	HAL_Delay(1);
 
-	write_imu_reg(PWR_MGMT_1, 0x01); // select best available clock
+	// writing a value of 0x01 (00000001) to the PWR_MGMT_1 register
+	// bit[0] to 1 selects the best available clock for the IMU to use
+	// in this case, the best clock is the external oscillator the MCU also uses
+	write_imu_reg(PWR_MGMT_1, 0x01);
 
 	HAL_Delay(1);
 
-	// reset accelerometer and gyroscope
+	// reset the accelerometer and gyroscope
+	// first writes a value of 0x3F (00111111) to the PWR_MGMT_2 register
+	// bits[5:0] = 111111 disables all axes on both the accelerometer and gyroscope
+	// then writes a value of 0x00 (00000000) to the same register
+	// bits[5:0] = 000000 enables all axes on both the accelerometer and gyroscope
 	write_imu_reg(PWR_MGMT_2, 0x3F);
-	HAL_Delay(1);
+	HAL_Delay(1); // delay after power off
 	write_imu_reg(PWR_MGMT_2, 0x00);
 
-	HAL_Delay(1);
+	HAL_Delay(1); // delay to give time after power on
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_2); // select User Bank 2 for configuration
+	// writing a value of 0x22 (00100010) to the INT_PIN_CFG register
+	// bit[7] = 0 sets logic level for interrupt as high
+	// bit[6] = 0 configures the interrupt pin as push-pull
+	// bit[5] = 1 sets the interrupt pin as high until the interrupt status is cleared
+	// bit[4] = 0 means the interrupt status is only cleared by reading INT_STATUS
+	// bit[1] = 1 sets the I2C master interface pins into "bypass mode" when the I2C master interface is disabled
+	write_imu_reg(INT_PIN_CFG, 0x22);
 
-	HAL_Delay(1);
+	// writing a value of 0x01 (00000001) to the INT_ENABLE_1 register
+	// bit[0] = 1 enables raw data ready interrupt to propagate to interrupt pin 1
+	write_imu_reg(INT_ENABLE_1, 0x01);
 
-	write_imu_reg(ODR_ALIGN_EN, 0x01); // enables output data rate (ODR) starting alignment
+	// writing a value of 0x02 (00000010) to the USER_BANK_SEL register
+	// select User Bank 2 to access certain registers for configuration purposes
+	write_imu_reg(USER_BANK_SEL, USER_BANK_2);
 
-	write_imu_reg(GYRO_CFG_1, 0x13); // configure digital low pass filter and +/- 500 DPS range for gyroscope
+	HAL_Delay(1); // delay used to give some time after user bank change
 
-	write_imu_reg(GYRO_SMPL_RATE, 0x00); // set gyroscope sampling rate to its full 1.1kHz
+	// writing a value of 0x01 (00000001) to the ODR_ALIGN_EN register
+	// bit[0] = 1 enables output data rate (ODR) starting alignment
+	// this means that the start times of different sensors are synchronized
+	write_imu_reg(ODR_ALIGN_EN, 0x01);
 
-	write_imu_reg(ACCEL_CFG_1, 0x13); // configure digital low pass filter and +/- 4g range for accelerometer
+	// writing a value of 0x13 (00010011) to the GYRO_CONFIG_1 register
+	// bit[5:3] = 010 selects a low pass filter configuration where the 3DB Bandwidth is 119.5 Hz
+	// bit[2:1] = 01 selects a resolution scale of +/- 500 DPS
+	// bit[0] = 1 enables the digital low pass filter (DLPF) for the gyroscope
+	write_imu_reg(GYRO_CFG_1, 0x13);
 
-	// set accelerometer sampling rate to 1.125kHz
+	// writing a value of 0x00 (00000000) to the GYRO_SMPLRT_DIV register
+	// ODR is computed as follows: 1.1 kHz/(1+GYRO_SMPLRT_DIV[7:0])
+	// bit[7:0] = 00000000 sets the gyroscope sampling rate to its full 1.1 kHz
+	write_imu_reg(GYRO_SMPL_RATE, 0x00);
+
+	// writing a value of 0x13 (00010011) to the ACCEL_CONFIG_1 register
+	// bit[5:3] = 010 selects a low pass filter configuration where the 3DB Bandwidth is 111.4 Hz
+	// bit[2:1] = 01 selects a resolution scale of +/- 4g
+	// bit[0] = 1 enables the digital low pass filter (DLPF) for the accelerometer
+	write_imu_reg(ACCEL_CFG_1, 0x13);
+
+	// writing a value of 0x00 (00000000) both ACCEL_SMPLRT_DIV registers
+	// ODR is computed as follows: 1.125 kHz/(1+ACCEL_SMPLRT_DIV[11:0])
+	// bits[11:0] = 000000000000 sets the accelerometer sampling rate to its full 1.125 kHz
 	write_imu_reg(ACCEL_SMPL_RATE_1, 0x00);
 	write_imu_reg(ACCEL_SMPL_RATE_2, 0x00);
 
-	mag_init(); // initialize magnetometer
-
-	read_mag_reg(BEGIN_VEC_DATA, 8); // begin reading magnetometer data, once read once, I2C will automatically sample data
-
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // select User Bank 0 to get readings
+	// initialize the AK09916 magnetic compass
+	mag_init();
 
 }
 
-void mag_init() {
+void mag_init(void) {
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
+	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
+	// select user bank 0 to configure the I2C master module
+	write_imu_reg(USER_BANK_SEL, USER_BANK_0);
 
-	uint8_t register_edit; // temporary variable used to edit existing register values
+	// editing the register value at USER_CTRL to include 0x02 (00000010), using the "or" bitwise operator
+	// bit[2] = 1 triggers an I2C master module reset
+	uint8_t register_edit; // temporary variable used to edit an existing register value
 	read_imu_reg(USER_CTLR, &register_edit); // get current register value
 	register_edit |= 0x02; // edit register value to reset I2C master module
-	write_imu_reg(USER_CTRL, register_edit);
+	write_imu_reg(USER_CTRL, register_edit); // writes new value to the register
 
-	HAL_Delay(1);
+	HAL_Delay(1); // delay after the reset
 
-	register_edit |= 0x20; // edit register value to enable I2C master module
+	// edit the register value at USER_CTLR to include 0x2 (00100000), using the "or" bitwise operator
+	// bit[5] = 1 re-enables the I2C master module, which we use to interface with the AK09916
+	register_edit |= 0x20;
 	write_imu_reg(USER_CTLR, register_edit);
 
 	// write_imu_reg(INT_PIN_CFG, 0x30); // configuring interrupts
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_3); // Select User Bank 3
-	write_imu_reg(I2C_MST_CTRL, 0x07); // I2C master clock set to 400kHz
+	// writing a value of 0x00 (00000000) to the LP_CFG register
+	// bit[6:4] = 000 disables duty cycled mode for the I2C master module (and other sensors)
+	// this allows for continuous polling
+	write_imu_reg(LP_CFG, 0x00);
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
-	write_imu_reg(LP_CFG, 0x00); // operate I2C master in continuous polling mode
+	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
+	// select user bank 3 to configure the I2C master clock frequency
+	write_imu_reg(USER_BANK_SEL, USER_BANK_3);
 
-	write_mag_reg(MAG_CTRL3, 0x01); // magnetometer reset
-	HAL_Delay(1);
-	write_mag_reg(MAG_CTRL2, 0x02); // set magnetometer to continuous measurement mode 4 (100Hz)
+	// also write a value of 0x07 (00000111) to the I2C_MST_CTLR register
+	// bit[3:0] = 1111 sets the I2C master module frequency to 400 kHz
+	write_imu_reg(I2C_MST_CTRL, 0x07);
+
+	// writes a value of 0x01 (00000001) to AK09916 register CNTL3
+	// bit[0] = 1 triggers a reset
+	write_mag_reg(MAG_CTRL_3, 0x01);
+	HAL_Delay(1); // delay after reset
+	// writes a value of 0x08 (00001000) to AK09916 register CNTL2
+	// bit[4:0] = 01000 sets the AK09916 to continuous measurement mode 4 (100Hz)
+	write_mag_reg(MAG_CTRL_2, 0x08);
+
+	// begin reading AK09916 data
+	// once read once, I2C will automatically sample data
+	read_mag_reg(BEGIN_VEC_DATA);
+
+	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
+	// this selects user bank 0 so that accelerometer, gyroscope, and AK09916 data can be accessed
+	write_imu_reg(USER_BANK_SEL, USER_BANK_0);
 
 }
 
@@ -94,7 +162,7 @@ uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data) {
 	uint8_t TxData[2] = {reg_addr, data};
 
 	peripheral_select(ICM20948_NCS);
-	uint8_t status = SPI_transmit(*TxData, sizeof(TxData), 5);
+	uint8_t status = SPI_transmit(TxData, sizeof(TxData), 1);
 	peripheral_deselect(ICM20948_NCS);
 
 	return status;
@@ -103,19 +171,16 @@ uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data) {
 
 uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data) {
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
-
-	uint8_t TxData[3] = {(reg_addr | 0x80), 0x00, 0x00};
-	uint8_t RxData[3];
+	uint8_t TxData = (reg_addr | 0x80);
+	uint8_t RxData;
 
 	peripheral_select(ICM20948_NCS);
-	uint8_t status = SPI_transmit_receive(*TxData, *RxData, sizeof(TxData), 5);
+	SPI_transmit(TxData, sizeof(TxData), 1);
+	uint8_t status = SPI_receive(RxData, sizeof(RxData), 1);
 	peripheral_deselect(ICM20948_NCS);
 
 	if (status == 1) {
-
-		*data = RxData[2];
-
+		*data = RxData;
 	}
 
 	return status;
@@ -123,19 +188,32 @@ uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data) {
 }
 
 void write_mag_reg(uint8_t reg_addr, uint8_t data) {
-	write_imu_reg(USER_BANK_SEL, USER_BANK_3); // Select User Bank 3
-	write_imu_reg(I2C_SLV0_ADDR, 0x0C); // define magnetometer as I2C peripheral for write operation
-	write_imu_reg(I2C_SLV0_REG, reg_addr); // define register address (within magnetometer) to begin data transfer with
-	write_imu_reg(I2C_SLV0_DO, data); // set data to be written
+	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
+	// select User Bank 3 to access AK09166 registers
+	write_imu_reg(USER_BANK_SEL, USER_BANK_3);
+	// writing the peripheral address (0x0C) of the AK09166 to the I2C_SLV0_ADDR register
+	// bit[7] = 0 indicates a write operation
+	// this defines the AK09166 as an I2C peripheral for write operations
+	write_imu_reg(I2C_SLV0_ADDR, 0x0C);
+	// writing the desired register address within the AK09166 to begin data transmission with
+	write_imu_reg(I2C_SLV0_REG, reg_addr);
+	// data is written to I2C_SVL0_D0, where it gets written to the specified register within the AK09166
+	write_imu_reg(I2C_SLV0_DO, data);
 }
 
 uint8_t read_mag_reg(uint8_t reg_addr) {
+	uint8_t data; // initialize variable to store read data
+	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
+	// select User Bank 3 to access AK09166 registers
+	write_imu_reg(USER_BANK_SEL, USER_BANK_3);
+	// writing the peripheral address (0x0C) of the AK09166 to the I2C_SLV0_ADDR register
+	// use bitwise "or" operator to include 0x80 (10000000), bit[7] = 1 indicates a read operation
+	// this defines the AK09166 as an I2C peripheral for read operations
+	write_imu_reg(I2C_SLV0_ADDR, (0x0C | 0x80));
+	// writing the desired register address within the AK09166 to begin data transmission with
+	write_imu_reg(I2C_SLV0_REG, reg_addr);
 
-	uint8_t data;
-	write_imu_reg(USER_BANK_SEL, USER_BANK_3); // Select User Bank 3
-	write_imu_reg(I2C_SLV0_ADDR, (0x0C | 0x80)); // define magnetometer as I2C peripheral for read operation
-	write_imu_reg(I2C_SLV0_REG, reg_addr); // define register address (within magnetometer) to begin data transfer with
-	write_imu_reg(I2C_SLV0_D0, 0xFF); // read
+	write_imu_reg(I2C_SLV0_DO, 0xFF); // read
 	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
 	read_imu_reg(MAG_DATA_OUT_1, &data);
 	return data;
@@ -147,26 +225,24 @@ uint8_t read_mag_reg(uint8_t reg_addr) {
 uint8_t read_accel_vec(imu *imu) {
 
 	// initialize Tx/Rx buffers for burst read
-	uint8_t TxData[7];
-	uint8_t RxData[7];
+	uint8_t TxData;
+	uint8_t RxData[6];
 
-	// Tx buffer to be sent to 0x2D, which is the register addr of ACCEL_X
-	TxData[0] = (0x2D | 0x80);
+	// Tx buffer to be sent to 0x2D, which is the register address of ACCEL_X
+	TxData = (0x2D | 0x80);
 
 	// set up dummy bytes for burst read
-	for (uint8_t i = 1; i < 7; i++) TxData[i] = 0xFF;
+	//for (uint8_t i = 1; i < 7; i++) TxData[i] = 0xFF;
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
-	// transmit-receive process using burst read
-	peripheral_select(ICM20948_NCS);
-	uint8_t status = SPI_transmit_receive(*TxData, *RxData, sizeof(TxData), 5);
-	peripheral_deselect(ICM20948_NCS);
+	// burst read to fill RxData buffer
+	uint8_t status = read_imu_reg(TxData, RxData, 1);
 
-	if (status == 1) {
+	// only update is SPI transaction is successful
+	if (status == 0) {
 		// assign raw values to corresponding vector components
-		int16_t Ax = (RxData[1] << 8) | RxData[2];
-		int16_t Ay = (RxData[3] << 8) | RxData[4];
-		int16_t Az = (RxData[5] << 8) | RxData[6];
+		int16_t Ax = (RxData[0] << 8) | RxData[1];
+		int16_t Ay = (RxData[2] << 8) | RxData[3];
+		int16_t Az = (RxData[4] << 8) | RxData[5];
 
 		// convert them to proper measurements
 		imu->A[0] = imu->accel_conversion * Ax;
@@ -181,31 +257,28 @@ uint8_t read_accel_vec(imu *imu) {
 uint8_t read_gyro_vec(imu *imu) {
 
 	// initialize Tx/Rx buffers for burst read
-	uint8_t TxData[7];
-	uint8_t RxData[7];
+	uint8_t TxData;
+	uint8_t RxData[6];
 
-	// Tx buffer to be sent to 0x2D, which is the register address of ACCEL_X
+	// Tx buffer to be sent to 0x2D, which is the register address of GYRO_X
 	TxData[0] = (0x31 | 0x80);
 
 	// set up dummy bytes for burst read
-	for (uint8_t i = 1; i < 7; i++) TxData[i] = 0xFF;
+	//for (uint8_t i = 1; i < 7; i++) TxData[i] = 0xFF;
 
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
-	// transmit-receive process
-	peripheral_select(ICM20948_NCS);
-	uint8_t status = SPI_transmit_receive(*TxData, *RxData, sizeof(TxData), 5);
-	peripheral_deselect(ICM20948_NCS);
+	// burst read to fill RxData buffer
+	uint8_t status = read_imu_reg(TxData, RxData, 1);
 
 	if (status == 1) {
 		// assign raw values to corresponding vector components
-		int16_t Gx = (RxData[1] << 8) | RxData[2];
-		int16_t Gy = (RxData[3] << 8) | RxData[4];
-		int16_t Gz = (RxData[5] << 8) | RxData[6];
+		int16_t Gx = (RxData[0] << 8) | RxData[1];
+		int16_t Gy = (RxData[2] << 8) | RxData[3];
+		int16_t Gz = (RxData[4] << 8) | RxData[5];
 
 		// convert them to proper measurements
-		imu->G[0] = imu->accel_conversion * Gx;
-		imu->G[1] = imu->accel_conversion * Gy;
-		imu->G[2] = imu->accel_conversion * Gz;
+		imu->G[0] = imu->gyro_conversion * Gx;
+		imu->G[1] = imu->gyro_conversion * Gy;
+		imu->G[2] = imu->gyro_conversion * Gz;
 	}
 
 	return status;
@@ -216,26 +289,59 @@ void read_mag_vec(imu *imu) {
 
 	uint8_t mag_buffer[6];
 
-	mag_buffer[0] = read_mag_reg(0x01);
-	mag_buffer[1] = read_mag_reg(0x11);
-	mag_buffer[2] = read_mag_reg(0x12);
+	uint8_t status = read_imu_reg(0x3B, mag_buffer, 1);
 
-	int16_t Mx = mag_buffer[1] | (mag_buffer[2]<<8);
+	if (status == 0) {
+		// assign raw values to corresponding vector components
+		// note: AK09166 uses little-endian (LSB first) in its register map
+		// this is why combining bytes seems reversed compared to the accelerometer or gyroscope
+		int16_t Mx = (RxData[1] << 8) | RxData[2];
+		int16_t My = (RxData[3] << 8) | RxData[4];
+		int16_t Mz = (RxData[5] << 8) | RxData[6];
 
-	mag_buffer[3] = read_mag_reg(0x13);
-	mag_buffer[4] = read_mag_reg(0x14);
-
-	int16_t My = mag_buffer[3] | (mag_buffer[4]<<8);
-
-	mag_buffer[5] = read_mag_reg(0x15);
-	mag_buffer[6] = read_mag_reg(0x16);
-
-	int16_t Mz = mag_buffer[5] | (mag_buffer[6]<<8);
+		// convert them to proper measurements
+		// according to the data sheet, typical sensitivity/conversion rate should be 0.15 μT/LSB
+		imu->G[0] = imu->mag_conversion * Mx;
+		imu->G[1] = imu->mag_conversion * My;
+		imu->G[2] = imu->mag_conversion * Mz;
+	}
 
 	read_mag_reg(0x18); // reading register STATUS_2 is required as end register to stop reading
 
-	imu->M[0] = imu->mag_conversion * Mx;
-	imu->M[1] = imu->mag_conversion * My;
-	imu->M[2] = imu->mag_conversion * Mz;
-
 }
+
+/*
+void read_mag_vec(imu *imu) {
+
+	uint8_t mag_buffer[7];
+
+	mag_buffer[0] = read_mag_reg(0x1);
+
+	if (status == 1) {
+		mag_buffer[1] = read_mag_reg(0x11);
+		mag_buffer[2] = read_mag_reg(0x12);
+
+		int16_t Mx = mag_buffer[1] | (mag_buffer[2]<<8);
+
+		mag_buffer[3] = read_mag_reg(0x13);
+		mag_buffer[4] = read_mag_reg(0x14);
+
+		int16_t My = mag_buffer[3] | (mag_buffer[4]<<8);
+
+		mag_buffer[5] = read_mag_reg(0x15);
+		mag_buffer[6] = read_mag_reg(0x16);
+
+		int16_t Mz = mag_buffer[5] | (mag_buffer[6]<<8);
+
+		read_mag_reg(0x18); // reading register STATUS_2 is required as end register to stop reading
+
+		imu->M[0] = imu->mag_conversion * Mx;
+		imu->M[1] = imu->mag_conversion * My;
+		imu->M[2] = imu->mag_conversion * Mz;
+	}
+}
+*/
+
+
+
+

@@ -29,8 +29,8 @@
 #define PWR_MGMT_1				0x06
 #define PWR_MGMT_2				0x07
 #define INT_PIN_CFG				0x0F
+#define INT_ENABLE_1			0x17
 #define MAG_DATA_OUT_1			0x3B
-
 
 // user bank 2
 #define GYRO_SMPL_RATE			0x00
@@ -40,7 +40,6 @@
 #define ACC_SMPL_RATE_2			0x11
 #define ACC_CFG_1				0x14
 
-
 // user bank 3
 #define I2C_MST_CTRL			0x01
 #define I2C_MST_DELAY_CTRL		0x02
@@ -49,7 +48,7 @@
 #define I2C_SLV0_CTRL			0x05
 #define I2C_SLV0_DO				0x06
 
-// magnetometer registers
+// AK09916 registers
 #define BEGIN_VEC_DATA			0x11
 #define MAG_CTRL_2				0x31
 #define MAG_CTRL_3				0x32
@@ -73,9 +72,9 @@ struct quat4 {
 typedef struct {
 
 	// conversion constants to be applied to raw measurements
-	float accel_conversion;
-	float gyro_conversion;
-	float mag_conversion;
+	float accel_conversion = 1/8192; // sensitivity scale factor is 8192 LSB/g
+	float gyro_conversion = 1/65.5; // sensitivity scale factor is 65.5 LSB/dps
+	float mag_conversion = 0.15; // typical sensitivity/conversion rate should be 0.15 μT/LSB
 
 	// x, y, z component measurements
 	float A[3];
