@@ -8,7 +8,7 @@ void SPI_pins_init(void) {
 	 * RCC_AH1BRENR_GPIOEN is a bit mask macro for the register location that enables the clock
 	 * GPIO_MODER_MODEx_y is a bit mask macro for the register location that determines operating mode of pin x by bit y
 	 */
-	RCC->AHB1ENR |= RCC_AH1BRENR_GPIOEN; //enable clock for GPIOA
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; //enable clock for GPIOA
 
 	// set PB4 and PB5 to alternate function mode
 	GPIOB->MODER &= ~(GPIO_MODER_MODE4_0 | GPIO_MODER_MODE5_0);
@@ -73,7 +73,7 @@ void SPI_configure(void) {
 
 	SPI3->CR1 |= (0x1U << 2); // set mode to controller
 
-	SPI3->CR1 &= ~(0x1U << 11); // set data frame format to 16 bits
+	SPI3->CR1 &= ~(0x0U << 11); // set data frame format to 16 bits
 
 	// select software peripheral management
 	SPI3->CR1 |= (0x1U << 8);
@@ -131,7 +131,7 @@ SPI_status SPI_transmit(uint8_t *TxData, uint32_t size, timeout_ms) {
 
 /*
  * @brief Receive an amount of data in blocking mode
- * @params RxData: pointer to the receive data buffer
+ * @params RxData: pointer dereference for the receive data buffer
  * @params size: size of the buffer
  * @return SPI_OK, SPI_ERROR, or SPI_TIMEOUT
  */
@@ -159,8 +159,8 @@ SPI_status SPI_receive(uint8_t *RxData, uint32_t size, timeout_ms) {
 
 /**
  * @brief Full-duplex SPI read/write function in blocking mode
- * @param TxData: pointer to the transmit data buffer
- * @param RxData: pointer to the receive data buffer
+ * @param TxData: pointer dereference for the transmit data buffer
+ * @param RxData: pointer dereference for the receive data buffer
  * @param size: size of the buffer
  * @param timeout_ms: timeout duration in ms
  * @returns SPI_OK, SPI_ERROR, or SPI_TIMEOUT
