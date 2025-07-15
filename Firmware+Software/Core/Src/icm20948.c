@@ -6,8 +6,10 @@
  */
 #include "icm20948.h"
 
-
-uint8_t imu_init(imu *imu) {
+/*
+ * @brief Initializes and configures the IMU to operate in SPI at their maximum sampling rates
+ */
+void imu_init(imu *imu) {
 
 	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
 	// select User Bank 0 to access certain registers for configuration purposes
@@ -97,12 +99,11 @@ uint8_t imu_init(imu *imu) {
 	// bits[11:0] = 000000000000 sets the accelerometer sampling rate to its full 1.125 kHz
 	write_imu_reg(ACCEL_SMPL_RATE_1, 0x00);
 	write_imu_reg(ACCEL_SMPL_RATE_2, 0x00);
-
-	// initialize the AK09916 magnetic compass
-	mag_init();
-
 }
 
+/*
+ * @brief Initializes and configures the AK09166 to operate in I2C peripheral mode at its maximum sampling rate
+ */
 void mag_init(void) {
 
 	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
@@ -148,7 +149,7 @@ void mag_init(void) {
 
 	// begin reading AK09916 data
 	// once read once, I2C will automatically sample data
-	read_mag_reg(BEGIN_VEC_DATA);
+	read_mag_reg(EXT_SLV_SENS_DATA_00);
 
 	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
 	// this selects user bank 0 so that accelerometer, gyroscope, and AK09916 data can be accessed
@@ -156,37 +157,51 @@ void mag_init(void) {
 
 }
 
-
+/*
+ * @brief Write data to a specified IMU register
+ * @return Status of the data transfer
+ */
 uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data) {
-
+	// initialize TxData buffer consisting of the register address and data to be written
 	uint8_t TxData[2] = {reg_addr, data};
 
-	peripheral_select(ICM20948_NCS);
-	uint8_t status = SPI_transmit(TxData, sizeof(TxData), 1);
-	peripheral_deselect(ICM20948_NCS);
+	peripheral_select(ICM20948_NCS); // pull NCS low for the IMU, selecting it for data transfer
+	uint8_t status = SPI_transmit(TxData, sizeof(TxData), 1); // write data to specified register
+	peripheral_deselect(ICM20948_NCS); // pull NCS high for IMU, de-selecting it for data transfer
 
-	return status;
+	return status; // return the status of the data transfer
 
 }
 
+/*
+ * @brief Read data from a specified IMU register
+ * @return Status of the data transfer
+ */
 uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data) {
 
+	// initialize TxData buffer consisting of the register address combined with 0x80 (10000000)
+	// bit[7] = 1 signifies a read operation
+	// initialize RxData buffer to receive data read from the specified register
 	uint8_t TxData = (reg_addr | 0x80);
 	uint8_t RxData;
 
-	peripheral_select(ICM20948_NCS);
-	SPI_transmit(TxData, sizeof(TxData), 1);
-	uint8_t status = SPI_receive(RxData, sizeof(RxData), 1);
-	peripheral_deselect(ICM20948_NCS);
+	peripheral_select(ICM20948_NCS); // pull NCS low for the IMU, selecting it for data transfer
+	SPI_transmit(TxData, sizeof(TxData), 1); // write data to specified register
+	uint8_t status = SPI_receive(RxData, sizeof(RxData), 1); // read data to RxBuffer
+	peripheral_deselect(ICM20948_NCS); // pull NCS high for IMU, de-selecting it for data transfer
 
+	// only assign RxData to the specified variable if data transfer is successful
 	if (status == 1) {
 		*data = RxData;
 	}
 
-	return status;
+	return status; // return status of the data transfer
 
 }
 
+/*
+ * @brief Write data to a specified AK09916 register
+ */
 void write_mag_reg(uint8_t reg_addr, uint8_t data) {
 	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
 	// select User Bank 3 to access AK09166 registers
@@ -201,6 +216,10 @@ void write_mag_reg(uint8_t reg_addr, uint8_t data) {
 	write_imu_reg(I2C_SLV0_DO, data);
 }
 
+/*
+ * @brief Read data from a specified AK09916 register
+ * @return Data read from the register
+ */
 uint8_t read_mag_reg(uint8_t reg_addr) {
 	uint8_t data; // initialize variable to store read data
 	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
@@ -214,28 +233,33 @@ uint8_t read_mag_reg(uint8_t reg_addr) {
 	write_imu_reg(I2C_SLV0_REG, reg_addr);
 
 	write_imu_reg(I2C_SLV0_DO, 0xFF); // read
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0); // Select User Bank 0
-	read_imu_reg(MAG_DATA_OUT_1, &data);
+
+	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
+	// select User Bank 0 to access data out registers for the AK09916
+	write_imu_reg(USER_BANK_SEL, USER_BANK_0);
+
+	// AK09916 data output gets put to EXT_SLV_SENS_DATA_00
+	read_imu_reg(EXT_SLV_SENS_DATA_00, &data);
 	return data;
 }
 
 /*
- * @brief
+ * @brief Read accelerometer XYZ components and assign them to corresponding IMU struct data elements
+ * @return Status of the data transfer
  */
 uint8_t read_accel_vec(imu *imu) {
 
-	// initialize Tx/Rx buffers for burst read
-	uint8_t TxData;
+	// initialize Rx buffer for burst read
 	uint8_t RxData[6];
-
-	// Tx buffer to be sent to 0x2D, which is the register address of ACCEL_X
-	TxData = (0x2D | 0x80);
 
 	// set up dummy bytes for burst read
 	//for (uint8_t i = 1; i < 7; i++) TxData[i] = 0xFF;
 
 	// burst read to fill RxData buffer
-	uint8_t status = read_imu_reg(TxData, RxData, 1);
+	// note: AK09166 uses big-endian (MSB first) in its register map
+	// hence why we shift the MSB left by 8 bits
+	// the bitwise "or" operator is used to combine the MSB and LSB to create a 16 bit integer
+	uint8_t status = read_imu_reg(0x2D, RxData);
 
 	// only update is SPI transaction is successful
 	if (status == 0) {
@@ -254,22 +278,27 @@ uint8_t read_accel_vec(imu *imu) {
 
 }
 
+/*
+ * @brief Read gyroscope XYZ components and assign them to corresponding IMU struct data elements
+ * @return Status of the data transfer
+ */
 uint8_t read_gyro_vec(imu *imu) {
 
 	// initialize Tx/Rx buffers for burst read
 	uint8_t TxData;
 	uint8_t RxData[6];
 
-	// Tx buffer to be sent to 0x2D, which is the register address of GYRO_X
-	TxData[0] = (0x31 | 0x80);
-
 	// set up dummy bytes for burst read
 	//for (uint8_t i = 1; i < 7; i++) TxData[i] = 0xFF;
 
 	// burst read to fill RxData buffer
-	uint8_t status = read_imu_reg(TxData, RxData, 1);
+	// note: AK09166 uses big-endian (MSB first) in its register map
+	// hence why we shift the MSB left by 8 bits
+	// the bitwise "or" operator is used to combine the MSB and LSB to create a 16 bit integer
+	uint8_t status = read_imu_reg(0x31, RxData);
 
-	if (status == 1) {
+	// only update is SPI transaction is successful
+	if (status == 0) {
 		// assign raw values to corresponding vector components
 		int16_t Gx = (RxData[0] << 8) | RxData[1];
 		int16_t Gy = (RxData[2] << 8) | RxData[3];
@@ -285,19 +314,26 @@ uint8_t read_gyro_vec(imu *imu) {
 
 }
 
+/*
+ * @brief Read AK09916 XYZ components and assign them to corresponding IMU struct data elements
+ */
 void read_mag_vec(imu *imu) {
 
+	// initialize 6 byte Rx buffer to store raw data
 	uint8_t mag_buffer[6];
 
-	uint8_t status = read_imu_reg(0x3B, mag_buffer, 1);
+	// initialize burst read starting from the EXT_SLV_SENS_DATA_00 register
+	// AK09166 measurements should be stored between EXT_SLV_SENS_DATA_00 and EXT_SLV_SENS_DATA_05
+	uint8_t status = read_imu_reg(EXT_SLV_SENS_DATA_00, mag_buffer);
 
+	// only update is SPI transaction is successful
 	if (status == 0) {
 		// assign raw values to corresponding vector components
 		// note: AK09166 uses little-endian (LSB first) in its register map
 		// this is why combining bytes seems reversed compared to the accelerometer or gyroscope
-		int16_t Mx = (RxData[1] << 8) | RxData[2];
-		int16_t My = (RxData[3] << 8) | RxData[4];
-		int16_t Mz = (RxData[5] << 8) | RxData[6];
+		int16_t Mx = (RxData[1] << 8) | RxData[0];
+		int16_t My = (RxData[3] << 8) | RxData[2];
+		int16_t Mz = (RxData[5] << 8) | RxData[4];
 
 		// convert them to proper measurements
 		// according to the data sheet, typical sensitivity/conversion rate should be 0.15 μT/LSB

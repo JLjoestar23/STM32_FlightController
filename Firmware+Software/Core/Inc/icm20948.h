@@ -49,19 +49,20 @@
 #define I2C_SLV0_DO				0x06
 
 // AK09916 registers
-#define BEGIN_VEC_DATA			0x11
+#define EXT_SLV_SENS_DATA_00	0x11
 #define MAG_CTRL_2				0x31
 #define MAG_CTRL_3				0x32
 
 
 
-// structures
+// vector data structure
 struct vec3 {
 	float x;
 	float y;
 	float z;
 };
 
+// quaternion data structure
 struct quat4 {
 	float a;
 	float b;
@@ -69,33 +70,33 @@ struct quat4 {
 	float d;
 };
 
+
+// struct consisting of IMU related variables
 typedef struct {
 
 	// conversion constants to be applied to raw measurements
-	float accel_conversion = 1/8192; // sensitivity scale factor is 8192 LSB/g
-	float gyro_conversion = 1/65.5; // sensitivity scale factor is 65.5 LSB/dps
+	float accel_conversion = 1/8192; // sensitivity scale factor is 8192 LSB/g for a resolution of +/- 4g
+	float gyro_conversion = 1/65.5; // sensitivity scale factor is 65.5 LSB/dps for a resolution of +/- 500 DPS
 	float mag_conversion = 0.15; // typical sensitivity/conversion rate should be 0.15 μT/LSB
 
 	// x, y, z component measurements
-	float A[3];
-	float G[3];
-	float M[3];
+	float A[3]; // accelerometer vector
+	float G[3]; // gyroscope vector
+	float M[3]; // AK09916 vector
 
 } imu;
 
-// general read/write to register functions
+// general read/write to IMU register functions
 uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data);
-
 uint8_t write_imu_reg(uint8_t reg_addr, uint8_t *data);
 
 // initialize the ICM20948
-uint8_t imu_init(void);
+void imu_init(void);
+void mag_init(void);
 
-// functions to read vector component measurements from each sensor
-uint8_t read_accel_vec();
-
-uint8_t read_gyro_vec();
-
-uint8_t read_mag_vec();
+// functions to burst read vector component measurements from each sensor
+uint8_t read_accel_vec(imu *imu);
+uint8_t read_gyro_vec(imu *imu);
+uint8_t read_mag_vec(imu *imu);
 
 #endif /* INC_ICM20948_H_ */
