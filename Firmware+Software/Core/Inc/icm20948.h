@@ -11,6 +11,7 @@
 #include "stdint.h"
 #include "spi.h"
 #include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
 
 #define IMU_ACCEL_READ 			0x2D
 
@@ -31,6 +32,12 @@
 #define INT_PIN_CFG				0x0F
 #define INT_ENABLE_1			0x17
 #define MAG_DATA_OUT_1			0x3B
+#define FIFO_EN_1				0x66
+#define FIFO_EN_2				0x67
+#define FIFO_RST				0x68
+#define FIFO_MODE				0x69
+#define FIFO_COUNTH				0x70
+#define FIFO_R_W				0x72
 
 // user bank 2
 #define GYRO_SMPL_RATE			0x00
@@ -84,6 +91,11 @@ typedef struct {
 	float G[3]; // gyroscope vector
 	float M[3]; // AK09916 vector
 
+	// bias measurements
+	float accel_bias[3];
+	float gyro_bias[3];
+	float mag_bias[3];
+
 } imu;
 
 // general read/write to IMU register functions
@@ -91,6 +103,7 @@ uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data);
 uint8_t write_imu_reg(uint8_t reg_addr, uint8_t *data);
 
 // initialize the ICM20948
+uint8_t who_am_i(void);
 void imu_init(void);
 void mag_init(void);
 
@@ -98,5 +111,9 @@ void mag_init(void);
 uint8_t read_accel_vec(imu *imu);
 uint8_t read_gyro_vec(imu *imu);
 uint8_t read_mag_vec(imu *imu);
+
+void calibrate_IMU(void);
+void calibrate_mag(void);
+
 
 #endif /* INC_ICM20948_H_ */
