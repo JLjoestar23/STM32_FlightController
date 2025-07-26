@@ -39,13 +39,23 @@
 #define FIFO_COUNTH				0x70
 #define FIFO_R_W				0x72
 
+// user bank 1
+
+
 // user bank 2
 #define GYRO_SMPL_RATE			0x00
 #define GYRO_CFG_1				0x01
+#define XG_OFFS_USRH			0x03
+#define XG_OFFS_USRL			0x04
+#define YG_OFFS_USRH			0x05
+#define YG_OFFS_USRL			0x06
+#define ZG_OFFS_USRH			0x07
+#define ZG_OFFS_USRL			0x08
 #define ODR_ALIGN_EN			0x09
 #define ACC_SMPL_RATE_1			0x10
 #define ACC_SMPL_RATE_2			0x11
 #define ACC_CFG_1				0x14
+
 
 // user bank 3
 #define I2C_MST_CTRL			0x01
@@ -85,6 +95,11 @@ typedef struct {
 	float accel_conversion = 1/8192; // sensitivity scale factor is 8192 LSB/g for a resolution of +/- 4g
 	float gyro_conversion = 1/65.5; // sensitivity scale factor is 65.5 LSB/dps for a resolution of +/- 500 DPS
 	float mag_conversion = 0.15; // typical sensitivity/conversion rate should be 0.15 μT/LSB
+
+	// raw x, y, z component measurements
+	int32_t A_raw[3];
+	int32_t G_raw[3];
+	int32_t M_raw[3];
 
 	// x, y, z component measurements
 	float A[3]; // accelerometer vector

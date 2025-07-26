@@ -273,14 +273,14 @@ uint8_t read_accel_vec(imu *imu) {
 	// only update is SPI transaction is successful
 	if (status == 0) {
 		// assign raw values to corresponding vector components
-		int16_t Ax = (RxData[0] << 8) | RxData[1];
-		int16_t Ay = (RxData[2] << 8) | RxData[3];
-		int16_t Az = (RxData[4] << 8) | RxData[5];
+		imu->A_raw[0] = (RxData[0] << 8) | RxData[1];
+		imu->A_raw[1] = (RxData[2] << 8) | RxData[3];
+		imu->A_raw[2] = (RxData[4] << 8) | RxData[5];
 
 		// convert them to proper measurements
-		imu->A[0] = imu->accel_conversion * Ax;
-		imu->A[1] = imu->accel_conversion * Ay;
-		imu->A[2] = imu->accel_conversion * Az;
+		imu->A[0] = imu->accel_conversion * imu->A_raw[0];
+		imu->A[1] = imu->accel_conversion * imu->A_raw[1];
+		imu->A[2] = imu->accel_conversion * imu->A_raw[2];
 	}
 
 	return status;
@@ -309,14 +309,14 @@ uint8_t read_gyro_vec(imu *imu) {
 	// only update is SPI transaction is successful
 	if (status == 0) {
 		// assign raw values to corresponding vector components
-		int16_t Gx = (RxData[0] << 8) | RxData[1];
-		int16_t Gy = (RxData[2] << 8) | RxData[3];
-		int16_t Gz = (RxData[4] << 8) | RxData[5];
+		imu->G_raw[0] = (RxData[0] << 8) | RxData[1];
+		imu->G_raw[1] = (RxData[2] << 8) | RxData[3];
+		imu->G_raw[2] = (RxData[4] << 8) | RxData[5];
 
 		// convert them to proper measurements
-		imu->G[0] = imu->gyro_conversion * Gx;
-		imu->G[1] = imu->gyro_conversion * Gy;
-		imu->G[2] = imu->gyro_conversion * Gz;
+		imu->G[0] = imu->gyro_conversion * imu->G_raw[0];
+		imu->G[1] = imu->gyro_conversion * imu->G_raw[1];
+		imu->G[2] = imu->gyro_conversion * imu->G_raw[2];
 	}
 
 	return status;
@@ -329,7 +329,7 @@ uint8_t read_gyro_vec(imu *imu) {
 void read_mag_vec(imu *imu) {
 
 	// initialize 6 byte Rx buffer to store raw data
-	uint8_t mag_buffer[6];
+	uint8_t RxData[6];
 
 	// initialize burst read starting from the EXT_SLV_SENS_DATA_00 register
 	// AK09166 measurements should be stored between EXT_SLV_SENS_DATA_00 and EXT_SLV_SENS_DATA_05
@@ -340,196 +340,61 @@ void read_mag_vec(imu *imu) {
 		// assign raw values to corresponding vector components
 		// note: AK09166 uses little-endian (LSB first) in its register map
 		// this is why combining bytes seems reversed compared to the accelerometer or gyroscope
-		int16_t Mx = (RxData[1] << 8) | RxData[0];
-		int16_t My = (RxData[3] << 8) | RxData[2];
-		int16_t Mz = (RxData[5] << 8) | RxData[4];
+		imu->M_raw[0] = (RxData[1] << 8) | RxData[0];
+		imu->M_raw[1] = (RxData[3] << 8) | RxData[2];
+		imu->M_raw[2] = (RxData[5] << 8) | RxData[4];
 
 		// convert them to proper measurements
 		// according to the data sheet, typical sensitivity/conversion rate should be 0.15 μT/LSB
-		imu->G[0] = imu->mag_conversion * Mx;
-		imu->G[1] = imu->mag_conversion * My;
-		imu->G[2] = imu->mag_conversion * Mz;
+		imu->M[0] = imu->mag_conversion * imu->M_raw[0];
+		imu->M[1] = imu->mag_conversion * imu->M_raw[1];
+		imu->M[2] = imu->mag_conversion * imu->M_raw[2];
 	}
 
 	read_mag_reg(0x18); // reading register STATUS_2 is required as end register to stop reading
 
 }
 
-/*
-void read_mag_vec(imu *imu) {
+void calibrate_gyro(imu *imu) {
+	int32_t Gx_bias, Gy_bias, Gz_bias; // int32_t to avoid overflow
+	uint8_t sample_size = 50; // collect 50 gyroscope measurements to average
+	int16_t gyro_offset[6]; // array containing 2 byte pairs of LSB and MSB for gyroscope bias
 
-	uint8_t mag_buffer[7];
-
-	mag_buffer[0] = read_mag_reg(0x1);
-
-	if (status == 1) {
-		mag_buffer[1] = read_mag_reg(0x11);
-		mag_buffer[2] = read_mag_reg(0x12);
-
-		int16_t Mx = mag_buffer[1] | (mag_buffer[2]<<8);
-
-		mag_buffer[3] = read_mag_reg(0x13);
-		mag_buffer[4] = read_mag_reg(0x14);
-
-		int16_t My = mag_buffer[3] | (mag_buffer[4]<<8);
-
-		mag_buffer[5] = read_mag_reg(0x15);
-		mag_buffer[6] = read_mag_reg(0x16);
-
-		int16_t Mz = mag_buffer[5] | (mag_buffer[6]<<8);
-
-		read_mag_reg(0x18); // reading register STATUS_2 is required as end register to stop reading
-
-		imu->M[0] = imu->mag_conversion * Mx;
-		imu->M[1] = imu->mag_conversion * My;
-		imu->M[2] = imu->mag_conversion * Mz;
-	}
-}
-*/
-
-void calibrate_IMU(imu *imu) {
-	uint8_t calibration_data[12]; // array to hold MSB and LSB for accelerometer and gyroscope vector data
-	uint16_t i, packet_count, fifo_count; // relevant counting variables
-	int32_t G_bias[3], A_bias[3]; // initializing arrays to hold bias values for the accelerometer and gyroscope
-	uint8_t sample_count[2]; // 2 byte array for the MSB and LSB of FIFO_COUNT
-
-	// initializing the IMU for bias calculation
-	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
-	// select User Bank 0 to access certain registers for configuration purposes
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0);
-
-	// writing a value of 0x80 (10000000) to PWR_MGMT_1 register
-	// bit[7] = 1 will reset internal registers on startup
-	write_imu_reg(PWR_MGMT_1, 0x80);
-
-	HAL_delay(1); // delay after reset
-
-	// writing a value of 0x01 (00000001) to the PWR_MGMT_1 register
-	// bit[0] to 1 selects the best available clock for the IMU to use
-	// in this case, the best clock is the external oscillator the MCU also uses
-	write_imu_reg(PWR_MGMT_1, 0x01);
-
-	// writing a value of 0x00 (00000000) to the INT_ENABLE_1 register
-	// bit[0] = 0 disables raw data ready interrupt to propagate to interrupt pin 1
-	write_imu_reg(INT_ENABLE_1, 0x00);
-
-	// writing a value of 0x00 (00000000) to the FIFO_EN_1 and 2 registers
-	// bit[7:0] = 00000000 in FIFO_EN_1 disables data in EXT_SENS_DATA from being written to the FIFO
-	// bit[7:0] = 00000000 in FIFO_EN_2 disables accelerometer and gyroscope data from being written to the FIFO
-	write_imu_reg(FIFO_EN_1, 0x00);
-	write_imu_reg(FIFO_EN_2, 0x00);
-
-	// I2C master mode is already disabled from reset
-	//writeByte(ICM20948_ADDRESS, I2C_MST_CTRL, 0x00);
-
-	// writing a value of 0x08 (00001000) to the USER_CTRL register
-	// bit[4] = 0 resets the digital motion processing (DMP) module
-	write_imu_reg(USER_CTRL, 0x08);
-
-	// writing a value of 0x1F (00011111) to the FIFO_RST register
-	// then writing a value of 0x00 (00000000) the same register
-	// bit[4:0] being set to 11111 then 00000 resets the FIFO
-	write_imu_reg(FIFO_RST, 0x1F);
-	HAL_delay(1);
-	write_imu_reg(FIFO_RST, 0x1F);
-	HAL_delay(1); // delay after reset
-
-	// writing a value of 0x1F (00011111) to the FIFO_MODE register
-	// bit[4:0] = 11111 sets the FIFO mode to snapshot mode
-	// snapshot mode means FIFO stops recording data once full
-	// this is useful for calculating bias as we want every sample in a certain time frame
-	write_imu_reg(FIFO_MODE, 0x1F);
-
-	// writing a value of 0x02 (00000011) to USER_BANK_SEL register
-	// select User Bank 2 to access certain registers for configuration purposes
-	write_imu_reg(USER_BANK_SEL, USER_BANK_2);
-
-	// writing a value of 0x11 (00010001) to the GYRO_CONFIG_1 register
-	// bit[5:3] = 010 selects a low pass filter configuration where the 3DB Bandwidth is 119.5 Hz
-	// bit[2:1] = 00 selects the minimum resolution scale of +/- 250 DPS for maximum sensitivity
-	// bit[0] = 1 enables the digital low pass filter (DLPF) for the gyroscope
-	write_imu_reg(GYRO_CFG_1, 0x11);
-
-	// writing a value of 0x00 (00000000) to the GYRO_SMPLRT_DIV register
-	// ODR is computed as follows: 1.1 kHz/(1+GYRO_SMPLRT_DIV[7:0])
-	// bit[7:0] = 00000000 sets the gyroscope sampling rate to its full 1.1 kHz
-	write_imu_reg(GYRO_SMPL_RATE, 0x00);
-
-	// writing a value of 0x13 (00010011) to the ACCEL_CONFIG_1 register
-	// bit[5:3] = 010 selects a low pass filter configuration where the 3DB Bandwidth is 111.4 Hz
-	// bit[2:1] = 01 selects a resolution scale of +/- 4g
-	// bit[0] = 1 enables the digital low pass filter (DLPF) for the accelerometer
-	write_imu_reg(ACCEL_CFG_1, 0x13);
-
-	// writing a value of 0x00 (00000000) both ACCEL_SMPLRT_DIV registers
-	// ODR is computed as follows: 1.125 kHz/(1+ACCEL_SMPLRT_DIV[11:0])
-	// bits[11:0] = 000000000000 sets the accelerometer sampling rate to its full 1.125 kHz
-	write_imu_reg(ACCEL_SMPL_RATE_1, 0x00);
-	write_imu_reg(ACCEL_SMPL_RATE_2, 0x00);
-
-	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
-	// select User Bank 0 to access certain registers for configuration purposes
-	write_imu_reg(USER_BANK_SEL, USER_BANK_0);
-
-	// writing a value of 0x40 (01000000) to the USER_CTRL register
-	// bit[6] = 1 enables FIFO operation mode
-	write_imu_reg(USER_CTRL, 0x40);
-
-	// writing a value of 0x1E (00011110) to the FIFO_EN_2 register
-	// bit[4:1] = 1111 enables writing accelerometer and gyroscope data to the FIFO at the sample rate
-	// max size of FIFO is 512 bytes in the ICM20948
-	write_imu_reg(FIFO_EN_2, 0x1E);
-
-	// delay to accumulate samples for 30 milliseconds
-	// this means around 33 samples (396 bytes), which does not overload the FIFO size
-	HAL_delay(30);
-
-	// writing a value of 0x00 (00000000) to the FIFO_EN_2 register
-	// bit[4:1] = 0000 disables writing accelerometer and gyroscope data to the FIFO at the sample rate
-	write_imu_reg(FIFO_EN_2, 0x00);
-
-	// reading from the FIFO_COUNTH register
-	// reading this byte latches the data for both FIFO_COUNTH, and FIFO_COUNTL, which are the MSB and LSB
-	read_imu_reg(FIFO_COUNTH, &sample_count);
-	// using a bit shift to combine MSB and LSB
-	fifo_count = (((uint16_t)sample_count[0] << 8) | sample_count[1]);
-
-	// calculate the amount of sets of full accelerometer and gyroscope data for averaging
-	// 12 bytes per set, as 2 bytes per axis, 6 axis total
-	packet_count = fifo_count/12;
-
-	// increment read through FIFO and average results
-	for (i = 0; i < packet_count; i++) {
-		int16_t A_temp[3], G_temp[3];
-
-		// read 12 bytes at a time from the FIFO
-		read_imu_reg(FIFO_R_W, &calibration_data);
-		// assign them to temporary values as signed 16 bit values using bit shifting
-		A_temp[0] = (int16_t) (((int16_t)calibration_data[0] << 8) | calibration_data[1]);
-		A_temp[1] = (int16_t) (((int16_t)calibration_data[2] << 8) | calibration_data[3]);
-		A_temp[2] = (int16_t) (((int16_t)calibration_data[4] << 8) | calibration_data[5]);
-		G_temp[0]  = (int16_t) (((int16_t)calibration_data[6] << 8) | calibration_data[7]);
-		G_temp[1]  = (int16_t) (((int16_t)calibration_data[8] << 8) | calibration_data[9]);
-		G_temp[2]  = (int16_t) (((int16_t)calibration_data[10] << 8) | calibration_data[11]);
-
-		// add them to the bias sample list, which will be averaged in the next step
-		// temp values are casted as signed 32 bit ints since biases are in that format
-		A_bias[0] += (int32_t) A_temp[0];
-		A_bias[1] += (int32_t) A_temp[1];
-		A_bias[2] += (int32_t) A_temp[2];
-		G_bias[0] += (int32_t) G_temp[0];
-		G_bias[1] += (int32_t) G_temp[1];
-		G_bias[2] += (int32_t) G_temp[2];
+	// loop that accumulates the specified amount of raw data samples
+	for(uint8_t i = 0; i <= sample_size; i++) {
+		read_gyro_vec(imu);
+		Gx_bias += imu->G_raw[0];
+		Gy_bias += imu->G_raw[1];
+		Gz_bias += imu->G_raw[2];
+		HAL_delay(1); // 1ms delay as polling rate is >1kHz
 	}
 
-	// divide by sample size to get average
-	A_bias[0] /= (int32_t) packet_count;
-	A_bias[1] /= (int32_t) packet_count;
-	A_bias[2] /= (int32_t) packet_count;
-	G_bias[0] /= (int32_t) packet_count;
-	G_bias[1] /= (int32_t) packet_count;
-	G_bias[2] /= (int32_t) packet_count;
+	// averaging out
+	Gx_bias /= sample_size;
+	Gy_bias /= sample_size;
+	Gz_bias /= sample_size;
 
+	// dividing by 4 is needed to get 32.9 LSB per deg/s to conform to expected bias input format
+	// change bias value to negative as we want to subtract the measurement error
+	Gx_bias /= -4;
+	Gy_bias /= -4;
+	Gz_bias /= -4;
+
+	// format as 2 byte values
+	gyro_offset[0] = ((Gx_bias << 8) & 0xFF);
+	gyro_offset[1] = (Gx_bias & 0xFF);
+	gyro_offset[2] = ((Gy_bias << 8) & 0xFF);
+	gyro_offset[3] = (Gy_bias & 0xFF);
+	gyro_offset[4] = ((Gz_bias << 8) & 0xFF);
+	gyro_offset[5] = (Gz_bias & 0xFF);
+
+	// write offsets to corresponding registers
+	write_imu_reg(XG_OFFS_USRH, gyro_offset[0]);
+	write_imu_reg(XG_OFFS_USRL, gyro_offset[1]);
+	write_imu_reg(YG_OFFS_USRH, gyro_offset[2]);
+	write_imu_reg(YG_OFFS_USRL, gyro_offset[3]);
+	write_imu_reg(ZG_OFFS_USRH, gyro_offset[4]);
+	write_imu_reg(ZG_OFFS_USRL, gyro_offset[5]);
 
 }
 
