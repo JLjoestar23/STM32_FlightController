@@ -155,6 +155,8 @@ void mag_init(void) {
 
 /*
  * @brief Write data to a specified IMU register
+*  @params reg_addr: the desired ICM20948 register address to write to
+ * @params data: data to be written to the register
  * @return Status of the data transfer
  */
 uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data) {
@@ -171,6 +173,8 @@ uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data) {
 
 /*
  * @brief Read data from a specified IMU register
+ * @params the desired ICM20948 register address to read from
+ * @params data: a pointer to the data buffer the read data is stored at
  * @return Status of the data transfer
  */
 uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data) {
@@ -197,6 +201,8 @@ uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data) {
 
 /*
  * @brief Write data to a specified AK09916 register
+ * @params reg_addr: the desired AK09166 register address to write to
+ * @params data: data to be written to the register
  */
 void write_mag_reg(uint8_t reg_addr, uint8_t data) {
 	// writing a value of 0x00 (00000011) to USER_BANK_SEL register
@@ -214,6 +220,7 @@ void write_mag_reg(uint8_t reg_addr, uint8_t data) {
 
 /*
  * @brief Read data from a specified AK09916 register
+ * @params reg_addr: the desired AK09166 register address to read from
  * @return Data read from the register
  */
 uint8_t read_mag_reg(uint8_t reg_addr) {
@@ -254,6 +261,7 @@ uint8_t who_am_i(void) {
 
 /*
  * @brief Read accelerometer XYZ components and assign them to corresponding IMU struct data elements
+ * @params imu: A pointer towards the IMU struct, which contains relevant data structures
  * @return Status of the data transfer
  */
 uint8_t read_accel_vec(imu *imu) {
@@ -289,6 +297,7 @@ uint8_t read_accel_vec(imu *imu) {
 
 /*
  * @brief Read gyroscope XYZ components and assign them to corresponding IMU struct data elements
+ * @params imu: A pointer towards the IMU struct, which contains relevant data structures
  * @return Status of the data transfer
  */
 uint8_t read_gyro_vec(imu *imu) {
@@ -325,6 +334,7 @@ uint8_t read_gyro_vec(imu *imu) {
 
 /*
  * @brief Read AK09916 XYZ components and assign them to corresponding IMU struct data elements
+ * @params imu: A pointer towards the IMU struct, which contains relevant data structures
  */
 void read_mag_vec(imu *imu) {
 
@@ -355,6 +365,10 @@ void read_mag_vec(imu *imu) {
 
 }
 
+/*
+ * @brief Calibrate the gyroscope by averaging its measurement bias and writing those values to their corresponding offset registers
+ * @params imu: A pointer towards the IMU struct, which contains relevant data structures
+ */
 void calibrate_gyro(imu *imu) {
 	int32_t Gx_bias, Gy_bias, Gz_bias; // int32_t to avoid overflow
 	uint8_t sample_size = 50; // collect 50 gyroscope measurements to average
@@ -381,6 +395,7 @@ void calibrate_gyro(imu *imu) {
 	Gz_bias /= -4;
 
 	// format as 2 byte values
+	// each bias value is combined with 0xFF via an "and" operation to preserve correct values
 	gyro_offset[0] = ((Gx_bias << 8) & 0xFF);
 	gyro_offset[1] = (Gx_bias & 0xFF);
 	gyro_offset[2] = ((Gy_bias << 8) & 0xFF);
@@ -389,6 +404,7 @@ void calibrate_gyro(imu *imu) {
 	gyro_offset[5] = (Gz_bias & 0xFF);
 
 	// write offsets to corresponding registers
+	// these registers store offset values and automatically use them to compensate for bias during measurements
 	write_imu_reg(XG_OFFS_USRH, gyro_offset[0]);
 	write_imu_reg(XG_OFFS_USRL, gyro_offset[1]);
 	write_imu_reg(YG_OFFS_USRH, gyro_offset[2]);
@@ -398,6 +414,55 @@ void calibrate_gyro(imu *imu) {
 
 }
 
+/*
+ * @brief Calibrate the gyroscope by averaging its measurement bias and writing those values to their corresponding offset registers
+ * @params imu: A pointer towards the IMU struct, which contains relevant data structures
+ */
+void calibrate_accel(imu *imu) {
+	int32_t Ax_bias, Ay_bias, Az_bias; // int32_t to avoid overflow
+	uint8_t sample_size = 50; // collect 50 gyroscope measurements to average
+	int16_t accel_offset[6]; // array containing 2 byte pairs of LSB and MSB for gyroscope bias
+
+	// loop that accumulates the specified amount of raw data samples
+	for(uint8_t i = 0; i <= sample_size; i++) {
+		read_gyro_vec(imu);
+		Ax_bias += imu->A_raw[0];
+		Ay_bias += imu->A_raw[1];
+		Az_bias += imu->A_raw[2];
+		HAL_delay(1); // 1ms delay as polling rate is >1kHz
+	}
+
+	// averaging out
+	Ax_bias /= sample_size;
+	Ay_bias /= sample_size;
+	Az_bias /= sample_size;
+
+	// dividing by 4 is needed to get 32.9 LSB per deg/s to conform to expected bias input format
+	// change bias value to negative as we want to subtract the measurement error
+	Ax_bias /= -4;
+	Ay_bias /= -4;
+	Az_bias /= -4;
+
+	// format as 2 byte values
+	// each bias value is combined with 0xFF via an "and" operation to preserve correct values
+	accel_offset[0] = ((Ax_bias << 8) & 0xFF);
+	accel_offset[1] = (Ax_bias & 0xFF);
+	accel_offset[2] = ((Ay_bias << 8) & 0xFF);
+	accel_offset[3] = (Ay_bias & 0xFF);
+	accel_offset[4] = ((Az_bias << 8) & 0xFF);
+	accel_offset[5] = (Az_bias & 0xFF);
+
+	// write offsets to corresponding registers
+	// these registers store offset values and automatically use them to compensate for bias during measurements
+	write_imu_reg(XA_OFFS_USRH, accel_offset[0]);
+	write_imu_reg(XA_OFFS_USRL, accel_offset[1]);
+	write_imu_reg(YA_OFFS_USRH, accel_offset[2]);
+	write_imu_reg(YA_OFFS_USRL, accel_offset[3]);
+	write_imu_reg(ZA_OFFS_USRH, accel_offset[4]);
+	write_imu_reg(ZA_OFFS_USRL, accel_offset[5]);
+}
+
+// might not create a calibrate compass function as precise heading information is not necessary at this phase in the project
 void calibrate_mag(void) {
 
 }

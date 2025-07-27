@@ -40,7 +40,12 @@
 #define FIFO_R_W				0x72
 
 // user bank 1
-
+#define XA_OFFS_USRH			0x14
+#define XA_OFFS_USRL			0x15
+#define YA_OFFS_USRH			0x17
+#define YA_OFFS_USRL			0x18
+#define ZA_OFFS_USRH			0x1A
+#define ZA_OFFS_USRL			0x1B
 
 // user bank 2
 #define GYRO_SMPL_RATE			0x00
