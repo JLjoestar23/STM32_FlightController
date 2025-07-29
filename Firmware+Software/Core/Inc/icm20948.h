@@ -102,6 +102,8 @@ typedef struct {
 // general read/write to IMU register functions
 uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data);
 uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data);
+void write_mag_reg(uint8_t reg_addr, uint8_t data);
+uint8_t read_mag_reg(uint8_t reg_addr);
 
 // initialize the ICM20948
 uint8_t who_am_i(void);
