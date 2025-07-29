@@ -11,7 +11,6 @@
 #include "stdint.h"
 #include "spi.h"
 #include "stm32f4xx.h"
-#include "stm32f4xx_hal.h"
 
 #define IMU_ACCEL_READ 			0x2D
 
@@ -75,24 +74,6 @@
 #define MAG_CTRL_2				0x31
 #define MAG_CTRL_3				0x32
 
-
-
-// vector data structure
-struct vec3 {
-	float x;
-	float y;
-	float z;
-};
-
-// quaternion data structure
-struct quat4 {
-	float a;
-	float b;
-	float c;
-	float d;
-};
-
-
 // struct consisting of IMU related variables
 typedef struct {
 
@@ -120,7 +101,7 @@ typedef struct {
 
 // general read/write to IMU register functions
 uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data);
-uint8_t write_imu_reg(uint8_t reg_addr, uint8_t *data);
+uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data);
 
 // initialize the ICM20948
 uint8_t who_am_i(void);
@@ -132,8 +113,7 @@ uint8_t read_accel_vec(imu *imu);
 uint8_t read_gyro_vec(imu *imu);
 uint8_t read_mag_vec(imu *imu);
 
-void calibrate_IMU(void);
-void calibrate_mag(void);
-
+void calibrate_accel(void);
+void calibrate_gyro(void);
 
 #endif /* INC_ICM20948_H_ */
