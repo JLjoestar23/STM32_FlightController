@@ -100,10 +100,12 @@ typedef struct {
 } imu;
 
 // general read/write to IMU register functions
-uint8_t read_imu_reg(uint8_t reg_addr, uint8_t *data);
-uint8_t write_imu_reg(uint8_t reg_addr, uint8_t data);
-void write_mag_reg(uint8_t reg_addr, uint8_t data);
-uint8_t read_mag_reg(uint8_t reg_addr);
+uint8_t write_imu_single(uint8_t reg_addr, uint8_t TxData);
+uint8_t write_imu_multiple(uint8_t reg_addr, uint8_t TxData, uint8_t size);
+uint8_t read_imu_single(uint8_t reg_addr, uint8_t *RxBuffer);
+uint8_t read_imu_multiple(uint8_t reg_addr, uint8_t *RxBuffer, uint8_t size);
+void write_mag_single(uint8_t reg_addr, uint8_t TxData);
+void read_mag_single(uint8_t reg_addr, uint8_t *RxBuffer);
 
 // initialize the ICM20948
 uint8_t who_am_i(void);
