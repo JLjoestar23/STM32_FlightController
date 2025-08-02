@@ -10,7 +10,6 @@
  * @brief Initializes and configures the IMU to operate in SPI at their maximum sampling rates
  */
 void imu_init(imu *imu) {
-
 	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
 	// select User Bank 0 to access certain registers for configuration purposes
 	write_imu_single(USER_BANK_SEL, USER_BANK_0);
@@ -101,7 +100,6 @@ void imu_init(imu *imu) {
  * @brief Initializes and configures the AK09166 to operate in I2C peripheral mode at its maximum sampling rate
  */
 void mag_init(void) {
-
 	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
 	// select user bank 0 to configure the I2C master module
 	write_imu_single(USER_BANK_SEL, USER_BANK_0);
@@ -120,7 +118,7 @@ void mag_init(void) {
 	register_edit |= 0x20;
 	write_imu_single(USER_CTLR, register_edit);
 
-	// write_imu_reg(INT_PIN_CFG, 0x30); // configuring interrupts
+	// write_imu_single(INT_PIN_CFG, 0x30); // configuring interrupts
 
 	// writing a value of 0x00 (00000000) to the LP_CFG register
 	// bit[6:4] = 000 disables duty cycled mode for the I2C master module (and other sensors)
@@ -151,7 +149,6 @@ void mag_init(void) {
 	// writing a value of 0x00 (00000000) to USER_BANK_SEL register
 	// this selects user bank 0 so that accelerometer, gyroscope, and AK09916 data can be accessed
 	write_imu_single(USER_BANK_SEL, USER_BANK_0);
-
 }
 
 
@@ -175,12 +172,12 @@ uint8_t write_imu_single(uint8_t reg_addr, uint8_t TxData) {
 
 /*
  * @brief Burst write multiple bytes of data to a specified starting IMU register
-*  @params reg_addr: the desired ICM20948 register address to write to
+ * @params reg_addr: the desired ICM20948 register address to write to
  * @params TxData: data to be written to the register
  * @params size: size of the data buffer to be transmitted
  * @return Status of the data transfer
  */
-uint8_t write_imu_multiple(uint8_t reg_addr, uint8_t TxData, uint8_t size) {
+uint8_t write_imu_multiple(uint8_t reg_addr, uint8_t *TxData, uint8_t size) {
 	uint8_t TxBuffer[size+1]; // initialize TxBuffer size
 	TxBuffer[0] = reg_addr; // set first index as register address
 	// loop through each byte in TxData to add to the transmit buffer TxBuffer
@@ -193,7 +190,6 @@ uint8_t write_imu_multiple(uint8_t reg_addr, uint8_t TxData, uint8_t size) {
 	peripheral_deselect(ICM20948_NCS); // pull NCS high for IMU, de-selecting it for data transfer
 
 	return status; // return the status of the data transfer
-
 }
 
 /*
@@ -203,7 +199,6 @@ uint8_t write_imu_multiple(uint8_t reg_addr, uint8_t TxData, uint8_t size) {
  * @return Status of the data transfer
  */
 uint8_t read_imu_single(uint8_t reg_addr, uint8_t *RxBuffer) {
-
 	// initialize TxBuffer consisting of the register address combined with 0x80 (10000000)
 	// bit[7] = 1 signifies a read operation
 	// initialize RxBuffer to receive data read from the specified register
@@ -331,7 +326,6 @@ uint8_t read_accel_vec(imu *imu) {
 	}
 
 	return status;
-
 }
 
 /*
@@ -368,7 +362,6 @@ uint8_t read_gyro_vec(imu *imu) {
 	}
 
 	return status;
-
 }
 
 /*
@@ -382,7 +375,7 @@ void read_mag_vec(imu *imu) {
 
 	// initialize burst read starting from the EXT_SLV_SENS_DATA_00 register
 	// AK09166 measurements should be stored between EXT_SLV_SENS_DATA_00 and EXT_SLV_SENS_DATA_05
-	uint8_t status = read_imu_reg(EXT_SLV_SENS_DATA_00, RxBuffer, 6);
+	uint8_t status = read_imu_multiple(EXT_SLV_SENS_DATA_00, RxBuffer, 6);
 
 	// only update is SPI transaction is successful
 	if (status == 0) {
@@ -401,7 +394,6 @@ void read_mag_vec(imu *imu) {
 	}
 
 	read_mag_single(0x18); // reading register STATUS_2 is required as end register to stop reading
-
 }
 
 /*
@@ -442,15 +434,23 @@ void calibrate_gyro(imu *imu) {
 	gyro_offset[4] = ((Gz_bias << 8) & 0xFF);
 	gyro_offset[5] = (Gz_bias & 0xFF);
 
-	// write offsets to corresponding registers
-	// these registers store offset values and automatically use them to compensate for bias during measurements
-	write_imu_reg(XG_OFFS_USRH, gyro_offset[0]);
-	write_imu_reg(XG_OFFS_USRL, gyro_offset[1]);
-	write_imu_reg(YG_OFFS_USRH, gyro_offset[2]);
-	write_imu_reg(YG_OFFS_USRL, gyro_offset[3]);
-	write_imu_reg(ZG_OFFS_USRH, gyro_offset[4]);
-	write_imu_reg(ZG_OFFS_USRL, gyro_offset[5]);
+	// writing a value of 0x02 (00000010) to USER_BANK_SEL register
+	// select User Bank 2 to access AK09166 registers
+	write_imu_single(USER_BANK_SEL, USER_BANK_2);
 
+	// burst write offsets to corresponding registers
+	// we can use burst write here as the registers are structured in order
+	// these registers store offset values and automatically use them to compensate for bias during measurements
+	write_imu_multiple(XG_OFFS_USRH, gyro_offset, 6, 1);
+
+	/*
+	write_imu_single(XG_OFFS_USRH, gyro_offset[0]);
+	write_imu_single(XG_OFFS_USRL, gyro_offset[1]);
+	write_imu_single(YG_OFFS_USRH, gyro_offset[2]);
+	write_imu_single(YG_OFFS_USRL, gyro_offset[3]);
+	write_imu_single(ZG_OFFS_USRH, gyro_offset[4]);
+	write_imu_single(ZG_OFFS_USRL, gyro_offset[5]);
+	*/
 }
 
 /*
@@ -492,19 +492,17 @@ void calibrate_accel(imu *imu) {
 	accel_offset[5] = (Az_bias & 0xFF);
 
 	// write offsets to corresponding registers
+	// cannot use burst read due to the register structure not being ordered
 	// these registers store offset values and automatically use them to compensate for bias during measurements
-	write_imu_reg(XA_OFFS_USRH, accel_offset[0]);
-	write_imu_reg(XA_OFFS_USRL, accel_offset[1]);
-	write_imu_reg(YA_OFFS_USRH, accel_offset[2]);
-	write_imu_reg(YA_OFFS_USRL, accel_offset[3]);
-	write_imu_reg(ZA_OFFS_USRH, accel_offset[4]);
-	write_imu_reg(ZA_OFFS_USRL, accel_offset[5]);
+	write_imu_single(XA_OFFS_USRH, accel_offset[0]);
+	write_imu_single(XA_OFFS_USRL, accel_offset[1]);
+	write_imu_single(YA_OFFS_USRH, accel_offset[2]);
+	write_imu_single(YA_OFFS_USRL, accel_offset[3]);
+	write_imu_single(ZA_OFFS_USRH, accel_offset[4]);
+	write_imu_single(ZA_OFFS_USRL, accel_offset[5]);
 }
 
 // might not create a calibrate compass function as precise heading information is not necessary at this phase in the project
 void calibrate_mag(void) {
 
 }
-
-
-
